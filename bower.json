@@ -1,11 +1,11 @@
 {
-  "name": "backbone.viewstack",
+  "name": "backbone.viewstack.js",
   "version": "0.0.1",
   "homepage": "https://github.com/Creative-Licence-Digital/backbone.viewstack",
   "authors": [
     "stephenhutchings <stephen@creativelicence.com.au>"
   ],
-  "description": "Manage views & transitions without the boilerplate",
+  "description": "Manage views & transitions in Backbone without the boilerplate",
   "main": [
     "build/backbone.viewstack.js",
     "build/backbone.viewstack.css"

@@ -19,7 +19,7 @@ See the [demo](http://creativelicence.github.io/backbone.viewstack/).
 Download the source files from the `build` directory, or use [Bower](http://www.bower.io/).
 
 ```bash
-$ bower install backbone.viewstack
+$ bower install backbone.viewstack.js
 ```
 
 Then include the javascript (and optional css) after Backbone on the page.

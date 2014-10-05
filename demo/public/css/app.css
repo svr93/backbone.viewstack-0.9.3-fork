@@ -8,6 +8,7 @@ body {
   font-size: 16px;
   font-family: "Avenir Next", sans-serif;
   line-height: 1.25em;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-text-size-adjust: none;
@@ -40,7 +41,7 @@ h2 {
   left: 50%;
   max-width: 320px;
   max-height: 568px;
-  margin: -284px -160px; }
+  margin: -230px -160px; }
 
 .nav-bar {
   color: white;
@@ -84,8 +85,8 @@ h2 {
   .button:active {
     background: #cccccc; }
 
-/* backbone.viewstack - v0.0.1 - MIT */
-/* Manage views & transitions without the boilerplate */
+/* backbone.viewstack - v0.0.2 - MIT */
+/* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
 #views {
   position: relative;

@@ -14,6 +14,8 @@ The library provides several core features:
 
 See the [demo](http://creative-licence-digital.github.io/backbone.viewstack/demo/public/).
 
+![http://creative-licence-digital.github.io/backbone.viewstack/demo/public/](/qrcode.png)
+
 ### How to use it
 
 Download the source files from the `build` directory, or use [Bower](http://www.bower.io/).

@@ -1,6 +1,6 @@
 {
   "name": "backbone.viewstack",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Manage views & transitions in Backbone without the boilerplate",
   "main": "",
   "scripts": {

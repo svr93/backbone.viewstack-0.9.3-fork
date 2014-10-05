@@ -1,0 +1,119 @@
+html,
+body {
+  background: black;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  font-family: "Avenir Next", sans-serif;
+  line-height: 1.25em;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  text-size-adjust: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none; }
+
+a {
+  color: inherit;
+  text-decoration: none; }
+
+h1, h2, p {
+  margin: 8px 0; }
+
+h1 {
+  font-size: 24px; }
+
+h2 {
+  font-size: 17px; }
+
+#views {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: 320px;
+  max-height: 568px;
+  margin: -284px -160px; }
+
+.nav-bar {
+  color: white;
+  position: absolute;
+  height: 70px;
+  width: 100%;
+  text-align: center;
+  line-height: 50px;
+  background: #1a1a1a; }
+  .nav-bar .nav-bar-button-left,
+  .nav-bar .nav-bar-button-right {
+    position: absolute;
+    width: 50px;
+    height: 52px;
+    bottom: 0; }
+    .nav-bar .nav-bar-button-left .icon:before,
+    .nav-bar .nav-bar-button-right .icon:before {
+      line-height: inherit; }
+  .nav-bar .nav-bar-button-left {
+    left: 0; }
+  .nav-bar .nav-bar-button-right {
+    right: 0; }
+  .nav-bar .nav-bar-title {
+    font-size: 20px;
+    height: 50px;
+    margin: 18px 70px 0; }
+
+.view-body {
+  background: #e8e8e8; }
+
+.content {
+  padding: 20px;
+  text-align: center; }
+
+.button {
+  display: block;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid;
+  border-radius: 4px; }
+  .button:active {
+    background: #cccccc; }
+
+/* backbone.viewstack - v0.0.1 - MIT */
+/* Manage views & transitions without the boilerplate */
+/* https://github.com/Creative-Licence-Digital/backbone.viewstack */
+#views {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
+
+#views .view-head {
+  position: absolute;
+  width: 100%;
+  height: 70px; }
+
+#views .view-body {
+  overflow: hidden;
+  position: absolute;
+  top: 70px;
+  left: -1px;
+  right: 0;
+  bottom: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  background-clip: content-box; }
+
+#views .view {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0; }
+
+
+/*# sourceMappingURL=app.css.map*/

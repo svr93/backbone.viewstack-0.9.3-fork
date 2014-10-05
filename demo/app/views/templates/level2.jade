@@ -1,0 +1,16 @@
+.view-head.nav-bar
+  a.nav-bar-button-left(href="#level1") Back
+  
+  .nav-bar-title Level 2
+
+.view-body: .content
+  h1 Level 2
+
+  p This view is automatically pushed onto the view. You can manually swipe back to the last view.
+
+  p Because this view declares a stack, the stack is created on initialization. This means you can refresh the page and still manually swipe back.
+
+  pre stack: ["level1", "level2"]
+
+  a.button(href="#level3") Go to level 3
+  

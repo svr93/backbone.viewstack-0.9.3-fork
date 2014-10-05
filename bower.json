@@ -1,0 +1,30 @@
+{
+  "name": "backbone.viewstack",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Creative-Licence-Digital/backbone.viewstack",
+  "authors": [
+    "stephenhutchings <stephen@creativelicence.com.au>"
+  ],
+  "description": "Manage views & transitions without the boilerplate",
+  "main": [
+    "build/backbone.viewstack.js",
+    "build/backbone.viewstack.css"
+  ],
+  "keywords": [
+    "backbone",
+    "views",
+    "management",
+    "stack",
+    "UINavigationController"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "demo",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "Cakefile",
+    "package.json",
+    "src"
+  ]
+}

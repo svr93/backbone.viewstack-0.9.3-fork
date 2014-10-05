@@ -12,7 +12,7 @@ The library provides several core features:
 - Stacks can be declared within views and created during an app's initialization for dead-simple preloaded views.
 - Transitions use element caches and hardware accelerated transforms for high performance animations, expecially geared towards mobile devices.
 
-See the [demo](http://creativelicence.github.io/backbone.viewstack/).
+See the [demo](http://creative-licence-digital.github.io/backbone.viewstack/demo/public/).
 
 ### How to use it
 

@@ -1,4 +1,4 @@
-/* backbone.viewstack - v0.0.2 - MIT */
+/* backbone.viewstack - v0.0.3 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },

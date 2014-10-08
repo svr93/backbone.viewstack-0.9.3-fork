@@ -188,8 +188,11 @@ do ->
       @hasSlid = false
 
       if _e.pageX - offset.left < 40
+        prevView = @stack[@stack.length - 1]
         nextView = @stack[@stack.length - 2]
 
+        prevView.$el.css zIndex: @stack.length
+        nextView.$el.css zIndex: @stack.length - 1
 
         @slide =
           startX: _e.pageX - offset.left

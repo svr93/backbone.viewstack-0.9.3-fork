@@ -111,7 +111,7 @@ do ->
       @cleaup(nextView.$el)
 
       if @preventPush
-        nextView.delegateEvents().$el.show()
+        nextView.delegateEvents().$el.show().addClass("active")
         prevView?.$el.hide()
         @preventPush = false
 

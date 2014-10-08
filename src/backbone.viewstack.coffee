@@ -45,6 +45,8 @@ do ->
         @$el.append options.el
 
       view = new View(options)
+      view.__head = view.$(@headClass)
+      view.__body = view.$(@bodyClass)
       view.$el.hide()
       @views[name] = view
 
@@ -122,21 +124,21 @@ do ->
         nextView.$el.show().addClass("active")
 
         # Remove transitions before setting initial transforms...
-        @transitionView {view: nextView}, false
-        @transitionView {view: prevView}, false
+        @transitionView nextView, false
+        @transitionView prevView, false
 
         # ... and then set initial transforms
-        @transformView {view: prevView}, 0, not isPush
-        @transformView {view: nextView}, @endRatio(isPush), isPush
+        @transformView prevView, 0, not isPush
+        @transformView nextView, @endRatio(isPush), isPush
 
         window.clearTimeout @transitionInTimeout
         @transitionInTimeout = window.setTimeout (=>
 
           # Add transitions and set new transforms
-          @transitionView {view: nextView}, true
-          @transitionView {view: prevView}, true
-          @transformView {view: nextView}, 0, not isPush
-          @transformView {view: prevView}, @endRatio(not isPush), not isPush
+          @transitionView nextView, true
+          @transitionView prevView, true
+          @transformView nextView, 0, not isPush
+          @transformView prevView, @endRatio(not isPush), not isPush
 
           # After the transition has occured, hide
           window.clearTimeout @transitionOutTimeout
@@ -182,14 +184,8 @@ do ->
           startX: _e.pageX - offset.left
           startY: _e.pageY
           offset: offset
-          prev:
-            view:     prevView
-            viewHead: prevView.$(@headClass)
-            viewBody: prevView.$(@bodyClass)
-          next:
-            view:     nextView
-            viewHead: nextView.$(@headClass)
-            viewBody: nextView.$(@bodyClass)
+          prev: prevView
+          next: nextView
 
         @onMove(e)
 
@@ -207,12 +203,12 @@ do ->
       if not @hasSlid
         if Math.abs(_e.pageX - @slide.offset.left - @slide.startX) > 10
           @hasSlid = true
-          @slide.prev.view.undelegateEvents()
-          @slide.next.view.undelegateEvents()
+          @slide.prev.undelegateEvents()
+          @slide.next.undelegateEvents()
           @transitionView @slide.prev, false
           @transitionView @slide.next, false
-          @slide.next.view.$el.show()
-          @slide.prev.view.$el.show()
+          @slide.next.$el.show()
+          @slide.prev.$el.show()
 
         else if Math.abs(_e.pageY - @slide.startY) > 20
           @onEnd()
@@ -256,15 +252,15 @@ do ->
         else
           @transformView prev, 0, false
           @transformView next, @endRatio(false), false
-          prev.view.delegateEvents()
+          prev.delegateEvents()
 
       @slide = null
 
     # Set the transition on the view's head and body.
-    transitionView: ({view, viewHead, viewBody}, willTransition) ->
+    transitionView: (view, willTransition) ->
       transition = if willTransition then "all 300ms" else "none"
 
-      (viewBody or view.$(@bodyClass)).add(viewHead or view.$(@headClass)).css
+      view.__head.add(view.__body).css
         "-webkit-transition": transition
         "-moz-transition": transition
         "-ms-transition": transition
@@ -274,11 +270,11 @@ do ->
     # Transforms affect the view in several ways. The ratio dictates its
     # position, but also opacity of the view's body if it is pushing, and the
     # view's head if it is popping.
-    transformView: ({view, viewHead, viewBody}, ratio, isPush) ->
+    transformView: (view, ratio, isPush) ->
       if view
         transform = "translate3d(#{ratio * 100}%, 0, 0)"
 
-        (viewBody or view.$(@bodyClass)).css
+        view.__body.css
           "-webkit-transform": transform
           "-moz-transform": transform
           "-ms-transform": transform
@@ -286,5 +282,5 @@ do ->
           "transform": transform
           "opacity": if not isPush then 1 + ratio else 1
 
-        (viewHead or view.$(@headClass)).css
+        view.__head.css
           "opacity": if isPush then 1 - ratio else 1

@@ -102,13 +102,17 @@ Because backbone.viewstack is just a view, you can easily extend its methods for
 
 ```js
   transformView: function(view, ratio, isPush){
-    // view.view is the view itself
-    // view.viewHead is a cache of the view's navigation bar element
-    // view.viewBody is a cache of the view's content element
+    // the backbone view is the view itself
+    // view.__head is a cache of the view's navigation bar element
+    // view.__body is a cache of the view's content element
     // ratio is the position in the transition
     // isPush is true if pushing and false if popping
   }
 ```
+
+`__view` and `__body` are both jQuery/Zepto elements saved onto your Backbone view on initialization. Your view *must* render these onto the DOM at initialization, or you will have to set these yourself. In the same sense, you can you `$.fn.add` to add more elements if you wish these to be transitioned/transformed as well.
+
+They are underscored for ensure they don't clash with any view keys you create yourself.
 
 ### Developing and testing
 

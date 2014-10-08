@@ -187,7 +187,7 @@ do ->
 
       @hasSlid = false
 
-      if _e.pageX - offset.left < 40 and @stack.length > 1
+      if _e.pageX - offset.left < 40
         nextView = @stack[@stack.length - 2]
 
 
@@ -205,7 +205,7 @@ do ->
     # don't slide outside of the bounds. Don't listen anymore when we've gone
     # over 20 pixels vertically.
     onMove: (e) ->
-      return if not @slide? or @stack.length < 2
+      return if not @slide?
 
       e.preventDefault() if e.type is "touchmove"
 
@@ -242,7 +242,7 @@ do ->
     # hidden view returns to its transition position and then clear it's
     # position after the transition duration has passed.
     onEnd: (e) ->
-      return if not @slide? or @stack.length < 2
+      return if not @slide?
 
       @transitionView @slide.prev, true
       @transitionView @slide.next, true

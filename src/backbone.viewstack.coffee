@@ -76,7 +76,7 @@ do ->
 
       nextView.show?(options)
 
-      prevView = @stack.slice(-1)[0]
+      prevView = @stack[@stack.length - 1]
 
       # Assume we're pushing if the new view is already in the stack.
       push = @stack.indexOf(nextView) < 0
@@ -95,7 +95,7 @@ do ->
 
     # Get the last view in the stack, push the new view and activate it.
     pushView: (view) ->
-      prevView = @stack.slice(-1)[0]
+      prevView = @stack[@stack.length - 1]
       @stack.push(view)
       @activateCurrentView(prevView, true)
 
@@ -106,7 +106,7 @@ do ->
     # Perform two transitions synchronously. Get the next view, and get it
     # ready to animate. Remove events from the old view.
     activateCurrentView: (prevView, isPush) ->
-      nextView = @stack.slice(-1)[0]
+      nextView = @stack[@stack.length - 1]
 
       if @preventPush
         nextView.delegateEvents().$el.show()
@@ -177,8 +177,8 @@ do ->
       @hasSlid = false
 
       if _e.pageX - offset.left < 40 and @stack.length > 1
-        prevView = @stack.slice(-1)[0]
-        nextView = @stack.slice(-2, -1)[0]
+        nextView = @stack[@stack.length - 2]
+
 
         @slide =
           startX: _e.pageX - offset.left

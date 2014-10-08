@@ -57,9 +57,9 @@ h2 {
     width: 50px;
     height: 52px;
     bottom: 0; }
-    .nav-bar .nav-bar-button-left .icon:before,
-    .nav-bar .nav-bar-button-right .icon:before {
-      line-height: inherit; }
+    .nav-bar .nav-bar-button-left:active,
+    .nav-bar .nav-bar-button-right:active {
+      opacity: 0.5; }
   .nav-bar .nav-bar-button-left {
     left: 0; }
   .nav-bar .nav-bar-button-right {

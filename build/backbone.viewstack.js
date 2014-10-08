@@ -56,6 +56,8 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
         this.$el.append(options.el);
       }
       view = new View(options);
+      view.__head = view.$(this.headClass);
+      view.__body = view.$(this.bodyClass);
       view.$el.hide();
       return this.views[name] = view;
     };
@@ -93,7 +95,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
       if (typeof nextView.show === "function") {
         nextView.show(options);
       }
-      prevView = this.stack.slice(-1)[0];
+      prevView = this.stack[this.stack.length - 1];
       push = this.stack.indexOf(nextView) < 0;
       if ((prevView != null ? (_ref1 = prevView.stack) != null ? _ref1.indexOf(name) : void 0 : void 0) > -1) {
         push = false;
@@ -111,7 +113,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 
     ViewStack.prototype.pushView = function(view) {
       var prevView;
-      prevView = this.stack.slice(-1)[0];
+      prevView = this.stack[this.stack.length - 1];
       this.stack.push(view);
       return this.activateCurrentView(prevView, true);
     };
@@ -122,9 +124,10 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 
     ViewStack.prototype.activateCurrentView = function(prevView, isPush) {
       var nextView, _base;
-      nextView = this.stack.slice(-1)[0];
+      nextView = this.stack[this.stack.length - 1];
+      this.cleaup(nextView.$el);
       if (this.preventPush) {
-        nextView.delegateEvents().$el.show();
+        nextView.delegateEvents().$el.show().addClass("active");
         if (prevView != null) {
           prevView.$el.hide();
         }
@@ -140,33 +143,17 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
           zIndex: this.stack.length
         });
         nextView.$el.show().addClass("active");
-        this.transitionView({
-          view: nextView
-        }, false);
-        this.transitionView({
-          view: prevView
-        }, false);
-        this.transformView({
-          view: prevView
-        }, 0, !isPush);
-        this.transformView({
-          view: nextView
-        }, this.endRatio(isPush), isPush);
+        this.transitionView(nextView, false);
+        this.transitionView(prevView, false);
+        this.transformView(prevView, 0, !isPush);
+        this.transformView(nextView, this.endRatio(isPush), isPush);
         window.clearTimeout(this.transitionInTimeout);
         return this.transitionInTimeout = window.setTimeout(((function(_this) {
           return function() {
-            _this.transitionView({
-              view: nextView
-            }, true);
-            _this.transitionView({
-              view: prevView
-            }, true);
-            _this.transformView({
-              view: nextView
-            }, 0, !isPush);
-            _this.transformView({
-              view: prevView
-            }, _this.endRatio(!isPush), !isPush);
+            _this.transitionView(nextView, true);
+            _this.transitionView(prevView, true);
+            _this.transformView(nextView, 0, !isPush);
+            _this.transformView(prevView, _this.endRatio(!isPush), !isPush);
             window.clearTimeout(_this.transitionOutTimeout);
             return _this.transitionOutTimeout = window.setTimeout((function() {
               nextView.delegateEvents();
@@ -175,6 +162,15 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
           };
         })(this)), 10);
       }
+    };
+
+    ViewStack.prototype.cleaup = function($el) {
+      window.clearTimeout(this.cleanupTimeout);
+      return this.cleanupTimeout = window.setTimeout(((function(_this) {
+        return function() {
+          return _this.$el.children(".active").not($el).hide().removeClass("active");
+        };
+      })(this)), 300);
     };
 
     ViewStack.prototype.endRatio = function(isPush) {
@@ -203,23 +199,21 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
       _e = isTouch ? e.touches[0] : e;
       offset = this.$el.offset();
       this.hasSlid = false;
-      if (_e.pageX - offset.left < 40 && this.stack.length > 1) {
-        prevView = this.stack.slice(-1)[0];
-        nextView = this.stack.slice(-2, -1)[0];
+      if (_e.pageX - offset.left < 40) {
+        prevView = this.stack[this.stack.length - 1];
+        nextView = this.stack[this.stack.length - 2];
+        prevView.$el.css({
+          zIndex: this.stack.length
+        });
+        nextView.$el.css({
+          zIndex: this.stack.length - 1
+        });
         this.slide = {
           startX: _e.pageX - offset.left,
           startY: _e.pageY,
           offset: offset,
-          prev: {
-            view: prevView,
-            viewHead: prevView.$(this.headClass),
-            viewBody: prevView.$(this.bodyClass)
-          },
-          next: {
-            view: nextView,
-            viewHead: nextView.$(this.headClass),
-            viewBody: nextView.$(this.bodyClass)
-          }
+          prev: prevView,
+          next: nextView
         };
         return this.onMove(e);
       }
@@ -227,7 +221,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 
     ViewStack.prototype.onMove = function(e) {
       var _e;
-      if ((this.slide == null) || this.stack.length < 2) {
+      if (this.slide == null) {
         return;
       }
       if (e.type === "touchmove") {
@@ -237,12 +231,12 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
       if (!this.hasSlid) {
         if (Math.abs(_e.pageX - this.slide.offset.left - this.slide.startX) > 10) {
           this.hasSlid = true;
-          this.slide.prev.view.undelegateEvents();
-          this.slide.next.view.undelegateEvents();
+          this.slide.prev.undelegateEvents();
+          this.slide.next.undelegateEvents();
           this.transitionView(this.slide.prev, false);
           this.transitionView(this.slide.next, false);
-          this.slide.next.view.$el.show();
-          this.slide.prev.view.$el.show();
+          this.slide.next.$el.show();
+          this.slide.prev.$el.show();
         } else if (Math.abs(_e.pageY - this.slide.startY) > 20) {
           this.onEnd();
         }
@@ -257,7 +251,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 
     ViewStack.prototype.onEnd = function(e) {
       var next, prev;
-      if ((this.slide == null) || this.stack.length < 2) {
+      if (this.slide == null) {
         return;
       }
       this.transitionView(this.slide.prev, true);
@@ -279,17 +273,16 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
         } else {
           this.transformView(prev, 0, false);
           this.transformView(next, this.endRatio(false), false);
-          prev.view.delegateEvents();
+          prev.delegateEvents();
         }
       }
       return this.slide = null;
     };
 
-    ViewStack.prototype.transitionView = function(_arg, willTransition) {
-      var transition, view, viewBody, viewHead;
-      view = _arg.view, viewHead = _arg.viewHead, viewBody = _arg.viewBody;
+    ViewStack.prototype.transitionView = function(view, willTransition) {
+      var transition;
       transition = willTransition ? "all 300ms" : "none";
-      return (viewBody || view.$(this.bodyClass)).add(viewHead || view.$(this.headClass)).css({
+      return view.__head.add(view.__body).css({
         "-webkit-transition": transition,
         "-moz-transition": transition,
         "-ms-transition": transition,
@@ -298,12 +291,11 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
       });
     };
 
-    ViewStack.prototype.transformView = function(_arg, ratio, isPush) {
-      var transform, view, viewBody, viewHead;
-      view = _arg.view, viewHead = _arg.viewHead, viewBody = _arg.viewBody;
+    ViewStack.prototype.transformView = function(view, ratio, isPush) {
+      var transform;
       if (view) {
         transform = "translate3d(" + (ratio * 100) + "%, 0, 0)";
-        (viewBody || view.$(this.bodyClass)).css({
+        view.__body.css({
           "-webkit-transform": transform,
           "-moz-transform": transform,
           "-ms-transform": transform,
@@ -311,7 +303,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
           "transform": transform,
           "opacity": !isPush ? 1 + ratio : 1
         });
-        return (viewHead || view.$(this.headClass)).css({
+        return view.__head.css({
           "opacity": isPush ? 1 - ratio : 1
         });
       }

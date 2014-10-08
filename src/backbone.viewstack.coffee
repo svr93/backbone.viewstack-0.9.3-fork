@@ -108,6 +108,8 @@ do ->
     activateCurrentView: (prevView, isPush) ->
       nextView = @stack[@stack.length - 1]
 
+      @cleaup(nextView.$el)
+
       if @preventPush
         nextView.delegateEvents().$el.show()
         prevView?.$el.hide()
@@ -147,6 +149,15 @@ do ->
             prevView.$el.hide().removeClass("active")
           ), 300
         ), 10
+
+    # Cleanup views if navigating very quickly without harming transitions.
+    # These views have already had their events undelegated, so we just need
+    # to hide them and remove their active clase.
+    cleaup: ($el) ->
+      window.clearTimeout @cleanupTimeout
+      @cleanupTimeout = window.setTimeout (=>
+        @$el.children(".active").not($el).hide().removeClass("active")
+      ), 300
 
     # The ratio at the end of a transtion.
     # When popping, views only move halfway back.

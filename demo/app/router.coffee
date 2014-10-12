@@ -1,8 +1,7 @@
 class AppRouter extends Backbone.Router
 
-  initialize: (callback) ->
     @viewstack = new Backbone.ViewStack(viewPath: "views/", el: "#views")
-    callback()
+  initialize: ->
 
   routes:
     "level1":       "level1"

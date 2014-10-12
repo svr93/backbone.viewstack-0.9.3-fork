@@ -16,7 +16,7 @@ exports.config =
           "vendor/js/lodash.underscore-1.1.1.min.js"
           "vendor/js/zepto.min.js"
           "vendor/js/backbone.min.js"
-          "vendor/js/backbone.viewstack.min.js"
+          "vendor/js/backbone.viewstack.js"
         ]
 
     stylesheets:

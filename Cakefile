@@ -27,9 +27,9 @@ task "build:bower", ->
 task "build:src", ->
   compile "src/#{config.name}.coffee", (res) ->
     fs.writeFile "build/#{config.name}.js", prepend + res, ->
+      fs.writeFile "demo/vendor/js/#{config.name}.js", prepend + res
       minify "build/#{config.name}.js", (res) ->
         fs.writeFile "build/#{config.name}.min.js", prepend + res
-        fs.writeFile "demo/vendor/js/#{config.name}.min.js", prepend + res
 
   exec "sass -t expanded --compass src/#{config.name}.sass", (err, res) ->
     fs.writeFile "build/#{config.name}.css", prepend + res

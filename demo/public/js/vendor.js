@@ -134,8 +134,1175 @@ var Zepto=function(){function L(t){return null==t?String(t):j[S.call(t)]||"objec
 ;/* backbone.viewstack - v0.0.3 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
-var __bind=function(t,e){return function(){return t.apply(e,arguments)}},__hasProp={}.hasOwnProperty,__extends=function(t,e){function i(){this.constructor=t}for(var s in e)__hasProp.call(e,s)&&(t[s]=e[s]);return i.prototype=e.prototype,t.prototype=new i,t.__super__=e.prototype,t};!function(){"use strict";var t;return t="ontouchstart"in window,Backbone||"undefined"!=typeof console&&null!==console&&console.error("Ensure Backbone is included before backbone.viewstack"),Backbone.ViewStack=function(e){function i(){return this.create=__bind(this.create,this),i.__super__.constructor.apply(this,arguments)}return __extends(i,e),i.prototype.el="#views",i.prototype.views={},i.prototype.stack=[],i.prototype.preventPush=!0,i.prototype.initialize=function(t){return t.viewPath||"undefined"!=typeof console&&null!==console&&console.error("Declare viewpath for views"),this.viewPath=t.viewPath,this.headClass=t.headClass||".view-head",this.bodyClass=t.bodyClass||".view-body",this},i.prototype.identify=function(t){return t.replace(/([a-z])([A-Z])/g,"$1-$2").toLowerCase().replace(/\//g,"-")+"-view"},i.prototype.create=function(t,e,i){var s;return null==i&&(i={}),null==i.el&&(i.el=$("<div class='view' id='"+this.identify(t)+"' />"),this.$el.append(i.el)),s=new e(i),s.__head=s.$(this.headClass),s.__body=s.$(this.bodyClass),s.$el.hide(),this.views[t]=s},i.prototype.show=function(t,e){var i,s,n,o,r,a,h,l,u,c,d,p;if(null==e&&(e={}),s=e.key,null==s&&(s=t),null!=this.views[s])n=this.views[s];else if(h=require(this.viewPath+t),n=this.create(t,h,e),0===this.stack.length&&n.stack)for(d=n.stack,i=l=0,u=d.length;u>l;i=++l)c=d[i],c!==t&&(h=require(this.viewPath+c),a=this.create(c,h),a.$el.css({zIndex:i+1}),this.stack.push(a));return"function"==typeof n.show&&n.show(e),o=this.stack[this.stack.length-1],r=this.stack.indexOf(n)<0,(null!=o?null!=(p=o.stack)?p.indexOf(t):void 0:void 0)>-1&&(r=!1),r&&!this.preventPush||0===this.stack.length?this.pushView(n):(this.stack=this.stack.slice(0,this.stack.indexOf(n)+1).concat(o),1===this.stack.length&&this.stack.unshift(n),this.popView())},i.prototype.pushView=function(t){var e;return e=this.stack[this.stack.length-1],this.stack.push(t),this.activateCurrentView(e,!0)},i.prototype.popView=function(){return this.activateCurrentView(this.stack.pop(),!1)},i.prototype.activateCurrentView=function(t,e){var i,s;return i=this.stack[this.stack.length-1],this.cleaup(i.$el),this.preventPush?(i.delegateEvents().$el.show().addClass("active"),null!=t&&t.$el.hide(),this.preventPush=!1):t!==i?("function"==typeof(s=t.undelegateEvents()).hide&&s.hide(),t.$el.css({zIndex:this.stack.length+(e?-1:1)}),i.$el.css({zIndex:this.stack.length}),i.$el.show().addClass("active"),this.transitionView(i,!1),this.transitionView(t,!1),this.transformView(t,0,!e),this.transformView(i,this.endRatio(e),e),window.clearTimeout(this.transitionInTimeout),this.transitionInTimeout=window.setTimeout(function(s){return function(){return s.transitionView(i,!0),s.transitionView(t,!0),s.transformView(i,0,!e),s.transformView(t,s.endRatio(!e),!e),window.clearTimeout(s.transitionOutTimeout),s.transitionOutTimeout=window.setTimeout(function(){return i.delegateEvents(),t.$el.hide().removeClass("active")},300)}}(this),10)):void 0},i.prototype.cleaup=function(t){return window.clearTimeout(this.cleanupTimeout),this.cleanupTimeout=window.setTimeout(function(e){return function(){return e.$el.children(".active").not(t).hide().removeClass("active")}}(this),300)},i.prototype.endRatio=function(t){return t?1:-.5},i.prototype.events=function(){var e;return e={},e[t?"touchstart":"mousedown"]="onStart",e[t?"touchmove":"mousemove"]="onMove",e[t?"touchend":"mouseup"]="onEnd",e[t?"touchcancel":"mouseleave"]="onEnd",e},i.prototype.onStart=function(e){var i,s,n,o;if(!(this.stack.length<2||e.target.nodeName.match(/INPUT|TEXTAREA/)))return o=t?e.touches[0]:e,s=this.$el.offset(),this.hasSlid=!1,o.pageX-s.left<40?(n=this.stack[this.stack.length-1],i=this.stack[this.stack.length-2],n.$el.css({zIndex:this.stack.length}),i.$el.css({zIndex:this.stack.length-1}),this.slide={startX:o.pageX-s.left,startY:o.pageY,offset:s,prev:n,next:i},this.onMove(e)):void 0},i.prototype.onMove=function(e){var i;if(null!=this.slide)return"touchmove"===e.type&&e.preventDefault(),i=t?e.touches[0]:e,this.hasSlid||(Math.abs(i.pageX-this.slide.offset.left-this.slide.startX)>10?(this.hasSlid=!0,this.slide.prev.undelegateEvents(),this.slide.next.undelegateEvents(),this.transitionView(this.slide.prev,!1),this.transitionView(this.slide.next,!1),this.slide.next.$el.show(),this.slide.prev.$el.show()):Math.abs(i.pageY-this.slide.startY)>20&&this.onEnd()),this.hasSlid?(e.stopPropagation(),this.slide.ratio=Math.min(Math.max((i.pageX-this.slide.offset.left-this.slide.startX)/this.slide.offset.width,0),1),this.transformView(this.slide.prev,this.slide.ratio,!0),this.transformView(this.slide.next,.5*-(1-this.slide.ratio),!1)):void 0},i.prototype.onEnd=function(t){var e,i;if(null!=this.slide)return this.transitionView(this.slide.prev,!0),this.transitionView(this.slide.next,!0),this.hasSlid&&(t.stopPropagation(),e=this.slide.next,i=this.slide.prev,this.slide.ratio>.5?(this.transformView(i,this.endRatio(!0),!0),this.transformView(e,0,!0),this.preventPush=!0,window.clearTimeout(this.transitionEndTimeout),this.transitionEndTimeout=window.setTimeout(function(){return function(){return window.history.back()}}(this),400)):(this.transformView(i,0,!1),this.transformView(e,this.endRatio(!1),!1),i.delegateEvents())),this.slide=null},i.prototype.transitionView=function(t,e){var i;return i=e?"all 300ms":"none",t.__head.add(t.__body).css({"-webkit-transition":i,"-moz-transition":i,"-ms-transition":i,"-o-transition":i,transition:i})},i.prototype.transformView=function(t,e,i){var s;return t?(s="translate3d("+100*e+"%, 0, 0)",t.__body.css({"-webkit-transform":s,"-moz-transform":s,"-ms-transform":s,"-o-transform":s,transform:s,opacity:i?1:1+e}),t.__head.css({opacity:i?1-e:1})):void 0},i}(Backbone.View)}();
-(function(e){if("function"==typeof bootstrap)bootstrap("jade",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeJade=e}else"undefined"!=typeof window?window.jade=e():global.jade=e()})(function(){var define,ses,bootstrap,module,exports;
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+(function() {
+  "use strict";
+  var isTouch;
+  isTouch = "ontouchstart" in window;
+  if (!Backbone) {
+    if (typeof console !== "undefined" && console !== null) {
+      console.error("Ensure Backbone is included before backbone.viewstack");
+    }
+  }
+  return Backbone.ViewStack = (function(_super) {
+    __extends(ViewStack, _super);
+
+    function ViewStack() {
+      return ViewStack.__super__.constructor.apply(this, arguments);
+    }
+
+    ViewStack.prototype.defaults = {
+      viewPath: "views/",
+      headClass: ".view-head",
+      bodyClass: ".view-body",
+      ms: 300
+    };
+
+    ViewStack.prototype.el = "#views";
+
+    ViewStack.prototype.views = {};
+
+    ViewStack.prototype.stack = [];
+
+    ViewStack.prototype.preventTransition = true;
+
+    ViewStack.prototype.didFadeAndPush = false;
+
+    ViewStack.prototype.initialize = function(options) {
+      var key, val, _ref;
+      _ref = _.extend({}, this.defaults, options);
+      for (key in _ref) {
+        val = _ref[key];
+        this[key] = val;
+      }
+      if (!this.viewPath) {
+        if (typeof console !== "undefined" && console !== null) {
+          console.error("Declare viewpath for views");
+        }
+      }
+      return this;
+    };
+
+    ViewStack.prototype.identify = function(string) {
+      return string.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase().replace(/\//g, "-") + "-view";
+    };
+
+    ViewStack.prototype.create = function(name, View, options) {
+      var view;
+      if (options == null) {
+        options = {};
+      }
+      if (options.el == null) {
+        options.el = $("<div class='view' id='" + (this.identify(name)) + "' />");
+        this.$el.append(options.el);
+      }
+      view = new View(options);
+      view.__key = name;
+      view.__head = view.$(this.headClass);
+      view.__body = view.$(this.bodyClass);
+      view.$el.hide();
+      return this.views[name] = view;
+    };
+
+    ViewStack.prototype.show = function(name, options) {
+      var i, isPush, key, nextView, prevView, view, viewClass, _i, _len, _name, _ref, _ref1;
+      if (options == null) {
+        options = {};
+      }
+      key = options.key;
+      if (key == null) {
+        key = name;
+      }
+      if (this.views[key] != null) {
+        nextView = this.views[key];
+      } else {
+        viewClass = require(this.viewPath + name);
+        nextView = this.create(name, viewClass, options);
+        if (this.stack.length === 0 && nextView.stack) {
+          _ref = nextView.stack;
+          for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+            _name = _ref[i];
+            if (!(_name !== name)) {
+              continue;
+            }
+            viewClass = require(this.viewPath + _name);
+            view = this.create(_name, viewClass);
+            view.$el.css({
+              zIndex: i + 1
+            });
+            this.stack.push(view);
+          }
+        }
+      }
+      if (typeof nextView.show === "function") {
+        nextView.show(options);
+      }
+      prevView = this.stack[this.stack.length - 1];
+      isPush = this.stack.indexOf(nextView) < 0;
+      if ((prevView != null ? (_ref1 = prevView.stack) != null ? _ref1.indexOf(name) : void 0 : void 0) > -1) {
+        isPush = false;
+      }
+      if (options.transition) {
+        this.undelegateEvents();
+      } else {
+        this.delegateEvents();
+      }
+      if (options.transition) {
+        this.didFadeAndPush = true;
+        this.transform = this["" + options.transition + "Transform"];
+      } else if (!this.didFadeAndPush) {
+        this.didFadeAndPush = false;
+        this.transform = this.slideTransform;
+      }
+      if (isPush || this.stack.length === 0 && !this.preventTransition) {
+        return this.pushView(nextView);
+      } else {
+        this.stack = this.stack.slice(0, this.stack.indexOf(nextView) + 1).concat(prevView);
+        if (this.stack.length === 1) {
+          this.stack.unshift(nextView);
+        }
+        return this.popView();
+      }
+    };
+
+    ViewStack.prototype.pushView = function(view) {
+      var prevView;
+      prevView = this.stack[this.stack.length - 1];
+      this.stack.push(view);
+      return this.activateCurrentView(prevView, true);
+    };
+
+    ViewStack.prototype.popView = function() {
+      return this.activateCurrentView(this.stack.pop(), false);
+    };
+
+    ViewStack.prototype.activateCurrentView = function(prevView, isPush) {
+      var nextView, _base;
+      nextView = this.stack[this.stack.length - 1];
+      this.cleanup(nextView.$el);
+      if (this.preventTransition) {
+        nextView.delegateEvents().$el.show().addClass("active");
+        if (prevView != null) {
+          prevView.$el.hide();
+        }
+        return this.preventTransition = false;
+      } else if (prevView !== nextView) {
+        if (typeof (_base = prevView.undelegateEvents()).hide === "function") {
+          _base.hide();
+        }
+        prevView.$el.css({
+          zIndex: this.stack.length + (isPush ? -1 : 1)
+        });
+        nextView.$el.css({
+          zIndex: this.stack.length
+        });
+        nextView.$el.show().addClass("active");
+        this.transitionView(nextView, false);
+        this.transitionView(prevView, false);
+        this.transform(prevView, 0, !isPush);
+        this.transform(nextView, this.endRatio(isPush), isPush);
+        this.$el.get(0).offsetWidth;
+        this.transitionView(nextView, true);
+        this.transitionView(prevView, true);
+        this.transform(nextView, 0, !isPush);
+        this.transform(prevView, this.endRatio(!isPush), !isPush);
+        window.clearTimeout(this.transitionOutTimeout);
+        return this.transitionOutTimeout = window.setTimeout(((function(_this) {
+          return function() {
+            nextView.delegateEvents();
+            prevView.$el.hide().removeClass("active");
+            _this.clearTransforms(nextView);
+            return _this.clearTransforms(prevView);
+          };
+        })(this)), this.ms + 100);
+      }
+    };
+
+    ViewStack.prototype.cleanup = function($el) {
+      window.clearTimeout(this.cleanupTimeout);
+      return this.cleanupTimeout = window.setTimeout(((function(_this) {
+        return function() {
+          if ($el.hasClass("active") && !_this.slide) {
+            return _this.$(".view").not($el).hide().removeClass("active");
+          }
+        };
+      })(this)), this.ms);
+    };
+
+    ViewStack.prototype.endRatio = function(isPush) {
+      if (isPush) {
+        return 1;
+      } else {
+        return -0.5;
+      }
+    };
+
+    ViewStack.prototype.events = function() {
+      var events;
+      events = {};
+      events[isTouch ? "touchstart" : "mousedown"] = "onStart";
+      events[isTouch ? "touchmove" : "mousemove"] = "onMove";
+      events[isTouch ? "touchend" : "mouseup"] = "onEnd";
+      events[isTouch ? "touchcancel" : "mouseleave"] = "onEnd";
+      return events;
+    };
+
+    ViewStack.prototype.onStart = function(e) {
+      var index, nextView, offset, prevView, _e, _ref;
+      if (this.stack.length < 2 || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
+        return;
+      }
+      _e = isTouch ? e.touches[0] : e;
+      offset = this.$el.offset();
+      this.hasSlid = false;
+      this.transform = this.slideTransform;
+      if (_e.pageX - offset.left < 40) {
+        prevView = this.stack[this.stack.length - 1];
+        index = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView) : void 0) - 1;
+        if (index >= 0) {
+          nextView = this.views[prev.stack[index]];
+        } else {
+          nextView = this.stack[this.stack.length - 2];
+        }
+        prevView.$el.css({
+          zIndex: this.stack.length
+        });
+        nextView.$el.css({
+          zIndex: this.stack.length - 1
+        });
+        this.slide = {
+          startX: _e.pageX - offset.left,
+          startY: _e.pageY,
+          offset: offset,
+          prev: prevView,
+          next: nextView
+        };
+        return this.onMove(e);
+      }
+    };
+
+    ViewStack.prototype.onMove = function(e) {
+      var _e;
+      if (this.slide == null) {
+        return;
+      }
+      if (e.type === "touchmove") {
+        e.preventDefault();
+      }
+      _e = isTouch ? e.touches[0] : e;
+      if (!this.hasSlid) {
+        if (Math.abs(_e.pageX - this.slide.offset.left - this.slide.startX) > 10) {
+          this.hasSlid = true;
+          this.slide.prev.undelegateEvents();
+          this.slide.next.undelegateEvents();
+          this.transitionView(this.slide.prev, false);
+          this.transitionView(this.slide.next, false);
+          this.slide.next.$el.show();
+          this.slide.prev.$el.show();
+        } else if (Math.abs(_e.pageY - this.slide.startY) > 20) {
+          this.onEnd();
+        }
+      }
+      if (this.hasSlid) {
+        e.stopPropagation();
+        this.slide.ratio = Math.min(Math.max((_e.pageX - this.slide.offset.left - this.slide.startX) / this.slide.offset.width, 0), 1);
+        this.transform(this.slide.prev, this.slide.ratio, true);
+        return this.transform(this.slide.next, -(1 - this.slide.ratio) * 0.5, false);
+      }
+    };
+
+    ViewStack.prototype.onEnd = function(e) {
+      var next, prev;
+      if (this.slide == null) {
+        return;
+      }
+      this.transitionView(this.slide.prev, true);
+      this.transitionView(this.slide.next, true);
+      if (this.hasSlid) {
+        e.stopPropagation();
+        next = this.slide.next;
+        prev = this.slide.prev;
+        if (this.slide.ratio > 0.5) {
+          this.transform(prev, this.endRatio(true), true);
+          this.transform(next, 0, true);
+          this.preventTransition = true;
+          this.cleanup(this.slide.next.$el);
+          window.clearTimeout(this.transitionEndTimeout);
+          this.transitionEndTimeout = window.setTimeout(((function(_this) {
+            return function() {
+              if (_this.isLinear) {
+                return window.history.back();
+              } else {
+                return _this.show(next.__key);
+              }
+            };
+          })(this)), this.ms + 100);
+        } else {
+          this.transform(prev, 0, false);
+          this.transform(next, this.endRatio(false), false);
+          this.cleanup(this.slide.prev.$el);
+          prev.delegateEvents();
+        }
+      }
+      return this.slide = null;
+    };
+
+    ViewStack.prototype.transitionView = function(view, willTransition) {
+      var transition;
+      transition = willTransition ? "all " + this.ms + "ms" : "none";
+      return view.__head.add(view.__body).css({
+        "-webkit-transition": transition,
+        "-moz-transition": transition,
+        "-ms-transition": transition,
+        "-o-transition": transition,
+        "transition": transition
+      });
+    };
+
+    ViewStack.prototype.slideTransform = function(view, ratio, isPush) {
+      var transform;
+      if (view) {
+        transform = "translate3d(" + (ratio * 100) + "%, 0, 0)";
+        view.__body.css({
+          "-webkit-transform": transform,
+          "-moz-transform": transform,
+          "-ms-transform": transform,
+          "-o-transform": transform,
+          "transform": transform,
+          "opacity": !isPush ? 1 + ratio : 1
+        });
+        return view.__head.css({
+          "opacity": isPush ? 1 - ratio : 1
+        });
+      }
+    };
+
+    ViewStack.prototype.zoomTransform = function(view, ratio, isPush) {
+      var transform;
+      if (view) {
+        transform = "translate3d(0, 0, 0) scale(" + (1 + ratio * 0.5) + ")";
+        view.__body.css({
+          "-webkit-transform": transform,
+          "-moz-transform": transform,
+          "-ms-transform": transform,
+          "-o-transform": transform,
+          "transform": transform,
+          "opacity": isPush ? 1 - ratio : 1
+        });
+        return view.__head.css({
+          "opacity": isPush ? 1 - ratio : 1
+        });
+      }
+    };
+
+    ViewStack.prototype.fadeTransform = function(view, ratio, isPush) {
+      if (view) {
+        view.__body.css({
+          "opacity": isPush ? 1 - ratio : 1
+        });
+        return view.__head.css({
+          "opacity": isPush ? 1 - ratio : 1
+        });
+      }
+    };
+
+    ViewStack.prototype.clearTransforms = function(view, ratio, isPush) {
+      if (view) {
+        view.__body.css({
+          "-webkit-transform": "",
+          "-moz-transform": "",
+          "-ms-transform": "",
+          "-o-transform": "",
+          "transform": "",
+          "opacity": ""
+        });
+        return view.__head.css({
+          "opacity": ""
+        });
+      }
+    };
+
+    return ViewStack;
+
+  })(Backbone.View);
+})();
+
+/**
+ * @preserve FastClick: polyfill to remove click delays on browsers with touch UIs.
+ *
+ * @version 1.0.0
+ * @codingstandard ftlabs-jsv2
+ * @copyright The Financial Times Limited [All Rights Reserved]
+ * @license MIT License (see LICENSE.txt)
+ */
+
+/*jslint browser:true, node:true*/
+/*global define, Event, Node*/
+
+
+/**
+ * Instantiate fast-clicking listeners on the specificed layer.
+ *
+ * @constructor
+ * @param {Element} layer The layer to listen on
+ */
+function FastClick(layer) {
+  'use strict';
+  var oldOnClick;
+
+
+  /**
+   * Whether a click is currently being tracked.
+   *
+   * @type boolean
+   */
+  this.trackingClick = false;
+
+
+  /**
+   * Timestamp for when when click tracking started.
+   *
+   * @type number
+   */
+  this.trackingClickStart = 0;
+
+
+  /**
+   * The element being tracked for a click.
+   *
+   * @type EventTarget
+   */
+  this.targetElement = null;
+
+
+  /**
+   * X-coordinate of touch start event.
+   *
+   * @type number
+   */
+  this.touchStartX = 0;
+
+
+  /**
+   * Y-coordinate of touch start event.
+   *
+   * @type number
+   */
+  this.touchStartY = 0;
+
+
+  /**
+   * ID of the last touch, retrieved from Touch.identifier.
+   *
+   * @type number
+   */
+  this.lastTouchIdentifier = 0;
+
+
+  /**
+   * Touchmove boundary, beyond which a click will be cancelled.
+   *
+   * @type number
+   */
+  this.touchBoundary = 10;
+
+
+  /**
+   * The FastClick layer.
+   *
+   * @type Element
+   */
+  this.layer = layer;
+
+  if (FastClick.notNeeded(layer)) {
+    return;
+  }
+
+  // Some old versions of Android don't have Function.prototype.bind
+  function bind(method, context) {
+    return function() { return method.apply(context, arguments); };
+  }
+
+  // Set up event handlers as required
+  if (deviceIsAndroid) {
+    layer.addEventListener('mouseover', bind(this.onMouse, this), true);
+    layer.addEventListener('mousedown', bind(this.onMouse, this), true);
+    layer.addEventListener('mouseup', bind(this.onMouse, this), true);
+  }
+
+  layer.addEventListener('click', bind(this.onClick, this), true);
+  layer.addEventListener('touchstart', bind(this.onTouchStart, this), false);
+  layer.addEventListener('touchmove', bind(this.onTouchMove, this), false);
+  layer.addEventListener('touchend', bind(this.onTouchEnd, this), false);
+  layer.addEventListener('touchcancel', bind(this.onTouchCancel, this), false);
+
+  // Hack is required for browsers that don't support Event#stopImmediatePropagation (e.g. Android 2)
+  // which is how FastClick normally stops click events bubbling to callbacks registered on the FastClick
+  // layer when they are cancelled.
+  if (!Event.prototype.stopImmediatePropagation) {
+    layer.removeEventListener = function(type, callback, capture) {
+      var rmv = Node.prototype.removeEventListener;
+      if (type === 'click') {
+        rmv.call(layer, type, callback.hijacked || callback, capture);
+      } else {
+        rmv.call(layer, type, callback, capture);
+      }
+    };
+
+    layer.addEventListener = function(type, callback, capture) {
+      var adv = Node.prototype.addEventListener;
+      if (type === 'click') {
+        adv.call(layer, type, callback.hijacked || (callback.hijacked = function(event) {
+          if (!event.propagationStopped) {
+            callback(event);
+          }
+        }), capture);
+      } else {
+        adv.call(layer, type, callback, capture);
+      }
+    };
+  }
+
+  // If a handler is already declared in the element's onclick attribute, it will be fired before
+  // FastClick's onClick handler. Fix this by pulling out the user-defined handler function and
+  // adding it as listener.
+  if (typeof layer.onclick === 'function') {
+
+    // Android browser on at least 3.2 requires a new reference to the function in layer.onclick
+    // - the old one won't work if passed to addEventListener directly.
+    oldOnClick = layer.onclick;
+    layer.addEventListener('click', function(event) {
+      oldOnClick(event);
+    }, false);
+    layer.onclick = null;
+  }
+}
+
+
+/**
+ * Android requires exceptions.
+ *
+ * @type boolean
+ */
+var deviceIsAndroid = navigator.userAgent.indexOf('Android') > 0;
+
+
+/**
+ * iOS requires exceptions.
+ *
+ * @type boolean
+ */
+var deviceIsIOS = /iP(ad|hone|od)/.test(navigator.userAgent);
+
+
+/**
+ * iOS 4 requires an exception for select elements.
+ *
+ * @type boolean
+ */
+var deviceIsIOS4 = deviceIsIOS && (/OS 4_\d(_\d)?/).test(navigator.userAgent);
+
+
+/**
+ * iOS 6.0(+?) requires the target element to be manually derived
+ *
+ * @type boolean
+ */
+var deviceIsIOSWithBadTarget = deviceIsIOS && (/OS ([6-9]|\d{2})_\d/).test(navigator.userAgent);
+
+
+/**
+ * Determine whether a given element requires a native click.
+ *
+ * @param {EventTarget|Element} target Target DOM element
+ * @returns {boolean} Returns true if the element needs a native click
+ */
+FastClick.prototype.needsClick = function(target) {
+  'use strict';
+  switch (target.nodeName.toLowerCase()) {
+
+  // Don't send a synthetic click to disabled inputs (issue #62)
+  case 'button':
+  case 'select':
+  case 'textarea':
+    if (target.disabled) {
+      return true;
+    }
+
+    break;
+  case 'input':
+
+    // File inputs need real clicks on iOS 6 due to a browser bug (issue #68)
+    if ((deviceIsIOS && target.type === 'file') || target.disabled) {
+      return true;
+    }
+
+    break;
+  case 'label':
+  case 'video':
+    return true;
+  }
+
+  return (/\bneedsclick\b/).test(target.className);
+};
+
+
+/**
+ * Determine whether a given element requires a call to focus to simulate click into element.
+ *
+ * @param {EventTarget|Element} target Target DOM element
+ * @returns {boolean} Returns true if the element requires a call to focus to simulate native click.
+ */
+FastClick.prototype.needsFocus = function(target) {
+  'use strict';
+  switch (target.nodeName.toLowerCase()) {
+  case 'textarea':
+    return true;
+  case 'select':
+    return !deviceIsAndroid;
+  case 'input':
+    switch (target.type) {
+    case 'button':
+    case 'checkbox':
+    case 'file':
+    case 'image':
+    case 'radio':
+    case 'submit':
+      return false;
+    }
+
+    // No point in attempting to focus disabled inputs
+    return !target.disabled && !target.readOnly;
+  default:
+    return (/\bneedsfocus\b/).test(target.className);
+  }
+};
+
+
+/**
+ * Send a click event to the specified element.
+ *
+ * @param {EventTarget|Element} targetElement
+ * @param {Event} event
+ */
+FastClick.prototype.sendClick = function(targetElement, event) {
+  'use strict';
+  var clickEvent, touch;
+
+  // On some Android devices activeElement needs to be blurred otherwise the synthetic click will have no effect (#24)
+  if (document.activeElement && document.activeElement !== targetElement) {
+    document.activeElement.blur();
+  }
+
+  touch = event.changedTouches[0];
+
+  // Synthesise a click event, with an extra attribute so it can be tracked
+  clickEvent = document.createEvent('MouseEvents');
+  clickEvent.initMouseEvent(this.determineEventType(targetElement), true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
+  clickEvent.forwardedTouchEvent = true;
+  targetElement.dispatchEvent(clickEvent);
+};
+
+FastClick.prototype.determineEventType = function(targetElement) {
+  'use strict';
+
+  //Issue #159: Android Chrome Select Box does not open with a synthetic click event
+  if (deviceIsAndroid && targetElement.tagName.toLowerCase() === 'select') {
+    return 'mousedown';
+  }
+
+  return 'click';
+};
+
+
+/**
+ * @param {EventTarget|Element} targetElement
+ */
+FastClick.prototype.focus = function(targetElement) {
+  'use strict';
+  var length;
+
+  // Issue #160: on iOS 7, some input elements (e.g. date datetime) throw a vague TypeError on setSelectionRange. These elements don't have an integer value for the selectionStart and selectionEnd properties, but unfortunately that can't be used for detection because accessing the properties also throws a TypeError. Just check the type instead. Filed as Apple bug #15122724.
+  if (deviceIsIOS && targetElement.setSelectionRange && targetElement.type.indexOf('date') !== 0 && targetElement.type !== 'time') {
+    length = targetElement.value.length;
+    targetElement.setSelectionRange(length, length);
+  } else {
+    targetElement.focus();
+  }
+};
+
+
+/**
+ * Check whether the given target element is a child of a scrollable layer and if so, set a flag on it.
+ *
+ * @param {EventTarget|Element} targetElement
+ */
+FastClick.prototype.updateScrollParent = function(targetElement) {
+  'use strict';
+  var scrollParent, parentElement;
+
+  scrollParent = targetElement.fastClickScrollParent;
+
+  // Attempt to discover whether the target element is contained within a scrollable layer. Re-check if the
+  // target element was moved to another parent.
+  if (!scrollParent || !scrollParent.contains(targetElement)) {
+    parentElement = targetElement;
+    do {
+      if (parentElement.scrollHeight > parentElement.offsetHeight) {
+        scrollParent = parentElement;
+        targetElement.fastClickScrollParent = parentElement;
+        break;
+      }
+
+      parentElement = parentElement.parentElement;
+    } while (parentElement);
+  }
+
+  // Always update the scroll top tracker if possible.
+  if (scrollParent) {
+    scrollParent.fastClickLastScrollTop = scrollParent.scrollTop;
+  }
+};
+
+
+/**
+ * @param {EventTarget} targetElement
+ * @returns {Element|EventTarget}
+ */
+FastClick.prototype.getTargetElementFromEventTarget = function(eventTarget) {
+  'use strict';
+
+  // On some older browsers (notably Safari on iOS 4.1 - see issue #56) the event target may be a text node.
+  if (eventTarget.nodeType === Node.TEXT_NODE) {
+    return eventTarget.parentNode;
+  }
+
+  return eventTarget;
+};
+
+
+/**
+ * On touch start, record the position and scroll offset.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+FastClick.prototype.onTouchStart = function(event) {
+  'use strict';
+  var targetElement, touch, selection;
+
+  // Ignore multiple touches, otherwise pinch-to-zoom is prevented if both fingers are on the FastClick element (issue #111).
+  if (event.targetTouches.length > 1) {
+    return true;
+  }
+
+  targetElement = this.getTargetElementFromEventTarget(event.target);
+  touch = event.targetTouches[0];
+
+  if (deviceIsIOS) {
+
+    // Only trusted events will deselect text on iOS (issue #49)
+    selection = window.getSelection();
+    if (selection.rangeCount && !selection.isCollapsed) {
+      return true;
+    }
+
+    if (!deviceIsIOS4) {
+
+      // Weird things happen on iOS when an alert or confirm dialog is opened from a click event callback (issue #23):
+      // when the user next taps anywhere else on the page, new touchstart and touchend events are dispatched
+      // with the same identifier as the touch event that previously triggered the click that triggered the alert.
+      // Sadly, there is an issue on iOS 4 that causes some normal touch events to have the same identifier as an
+      // immediately preceeding touch event (issue #52), so this fix is unavailable on that platform.
+      if (touch.identifier === this.lastTouchIdentifier) {
+        event.preventDefault();
+        return false;
+      }
+
+      this.lastTouchIdentifier = touch.identifier;
+
+      // If the target element is a child of a scrollable layer (using -webkit-overflow-scrolling: touch) and:
+      // 1) the user does a fling scroll on the scrollable layer
+      // 2) the user stops the fling scroll with another tap
+      // then the event.target of the last 'touchend' event will be the element that was under the user's finger
+      // when the fling scroll was started, causing FastClick to send a click event to that layer - unless a check
+      // is made to ensure that a parent layer was not scrolled before sending a synthetic click (issue #42).
+      this.updateScrollParent(targetElement);
+    }
+  }
+
+  this.trackingClick = true;
+  this.trackingClickStart = event.timeStamp;
+  this.targetElement = targetElement;
+
+  this.touchStartX = touch.pageX;
+  this.touchStartY = touch.pageY;
+
+  // Prevent phantom clicks on fast double-tap (issue #36)
+  if ((event.timeStamp - this.lastClickTime) < 200) {
+    event.preventDefault();
+  }
+
+  return true;
+};
+
+
+/**
+ * Based on a touchmove event object, check whether the touch has moved past a boundary since it started.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+FastClick.prototype.touchHasMoved = function(event) {
+  'use strict';
+  var touch = event.changedTouches[0], boundary = this.touchBoundary;
+
+  if (Math.abs(touch.pageX - this.touchStartX) > boundary || Math.abs(touch.pageY - this.touchStartY) > boundary) {
+    return true;
+  }
+
+  return false;
+};
+
+
+/**
+ * Update the last position.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+FastClick.prototype.onTouchMove = function(event) {
+  'use strict';
+  if (!this.trackingClick) {
+    return true;
+  }
+
+  // If the touch has moved, cancel the click tracking
+  if (this.targetElement !== this.getTargetElementFromEventTarget(event.target) || this.touchHasMoved(event)) {
+    this.trackingClick = false;
+    this.targetElement = null;
+  }
+
+  return true;
+};
+
+
+/**
+ * Attempt to find the labelled control for the given label element.
+ *
+ * @param {EventTarget|HTMLLabelElement} labelElement
+ * @returns {Element|null}
+ */
+FastClick.prototype.findControl = function(labelElement) {
+  'use strict';
+
+  // Fast path for newer browsers supporting the HTML5 control attribute
+  if (labelElement.control !== undefined) {
+    return labelElement.control;
+  }
+
+  // All browsers under test that support touch events also support the HTML5 htmlFor attribute
+  if (labelElement.htmlFor) {
+    return document.getElementById(labelElement.htmlFor);
+  }
+
+  // If no for attribute exists, attempt to retrieve the first labellable descendant element
+  // the list of which is defined here: http://www.w3.org/TR/html5/forms.html#category-label
+  return labelElement.querySelector('button, input:not([type=hidden]), keygen, meter, output, progress, select, textarea');
+};
+
+
+/**
+ * On touch end, determine whether to send a click event at once.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+FastClick.prototype.onTouchEnd = function(event) {
+  'use strict';
+  var forElement, trackingClickStart, targetTagName, scrollParent, touch, targetElement = this.targetElement;
+
+  if (!this.trackingClick) {
+    return true;
+  }
+
+  // Prevent phantom clicks on fast double-tap (issue #36)
+  if ((event.timeStamp - this.lastClickTime) < 200) {
+    this.cancelNextClick = true;
+    return true;
+  }
+
+  // Reset to prevent wrong click cancel on input (issue #156).
+  this.cancelNextClick = false;
+
+  this.lastClickTime = event.timeStamp;
+
+  trackingClickStart = this.trackingClickStart;
+  this.trackingClick = false;
+  this.trackingClickStart = 0;
+
+  // On some iOS devices, the targetElement supplied with the event is invalid if the layer
+  // is performing a transition or scroll, and has to be re-detected manually. Note that
+  // for this to function correctly, it must be called *after* the event target is checked!
+  // See issue #57; also filed as rdar://13048589 .
+  if (deviceIsIOSWithBadTarget) {
+    touch = event.changedTouches[0];
+
+    // In certain cases arguments of elementFromPoint can be negative, so prevent setting targetElement to null
+    targetElement = document.elementFromPoint(touch.pageX - window.pageXOffset, touch.pageY - window.pageYOffset) || targetElement;
+    targetElement.fastClickScrollParent = this.targetElement.fastClickScrollParent;
+  }
+
+  targetTagName = targetElement.tagName.toLowerCase();
+  if (targetTagName === 'label') {
+    forElement = this.findControl(targetElement);
+    if (forElement) {
+      this.focus(targetElement);
+      if (deviceIsAndroid) {
+        return false;
+      }
+
+      targetElement = forElement;
+    }
+  } else if (this.needsFocus(targetElement)) {
+
+    // Case 1: If the touch started a while ago (best guess is 100ms based on tests for issue #36) then focus will be triggered anyway. Return early and unset the target element reference so that the subsequent click will be allowed through.
+    // Case 2: Without this exception for input elements tapped when the document is contained in an iframe, then any inputted text won't be visible even though the value attribute is updated as the user types (issue #37).
+    if ((event.timeStamp - trackingClickStart) > 100 || (deviceIsIOS && window.top !== window && targetTagName === 'input')) {
+      this.targetElement = null;
+      return false;
+    }
+
+    this.focus(targetElement);
+    this.sendClick(targetElement, event);
+
+    // Select elements need the event to go through on iOS 4, otherwise the selector menu won't open.
+    if (!deviceIsIOS4 || targetTagName !== 'select') {
+      this.targetElement = null;
+      event.preventDefault();
+    }
+
+    return false;
+  }
+
+  if (deviceIsIOS && !deviceIsIOS4) {
+
+    // Don't send a synthetic click event if the target element is contained within a parent layer that was scrolled
+    // and this tap is being used to stop the scrolling (usually initiated by a fling - issue #42).
+    scrollParent = targetElement.fastClickScrollParent;
+    if (scrollParent && scrollParent.fastClickLastScrollTop !== scrollParent.scrollTop) {
+      return true;
+    }
+  }
+
+  // Prevent the actual click from going though - unless the target node is marked as requiring
+  // real clicks or if it is in the whitelist in which case only non-programmatic clicks are permitted.
+  if (!this.needsClick(targetElement)) {
+    event.preventDefault();
+    this.sendClick(targetElement, event);
+  }
+
+  return false;
+};
+
+
+/**
+ * On touch cancel, stop tracking the click.
+ *
+ * @returns {void}
+ */
+FastClick.prototype.onTouchCancel = function() {
+  'use strict';
+  this.trackingClick = false;
+  this.targetElement = null;
+};
+
+
+/**
+ * Determine mouse events which should be permitted.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+FastClick.prototype.onMouse = function(event) {
+  'use strict';
+
+  // If a target element was never set (because a touch event was never fired) allow the event
+  if (!this.targetElement) {
+    return true;
+  }
+
+  if (event.forwardedTouchEvent) {
+    return true;
+  }
+
+  // Programmatically generated events targeting a specific element should be permitted
+  if (!event.cancelable) {
+    return true;
+  }
+
+  // Derive and check the target element to see whether the mouse event needs to be permitted;
+  // unless explicitly enabled, prevent non-touch click events from triggering actions,
+  // to prevent ghost/doubleclicks.
+  if (!this.needsClick(this.targetElement) || this.cancelNextClick) {
+
+    // Prevent any user-added listeners declared on FastClick element from being fired.
+    if (event.stopImmediatePropagation) {
+      event.stopImmediatePropagation();
+    } else {
+
+      // Part of the hack for browsers that don't support Event#stopImmediatePropagation (e.g. Android 2)
+      event.propagationStopped = true;
+    }
+
+    // Cancel the event
+    event.stopPropagation();
+    event.preventDefault();
+
+    return false;
+  }
+
+  // If the mouse event is permitted, return true for the action to go through.
+  return true;
+};
+
+
+/**
+ * On actual clicks, determine whether this is a touch-generated click, a click action occurring
+ * naturally after a delay after a touch (which needs to be cancelled to avoid duplication), or
+ * an actual click which should be permitted.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+FastClick.prototype.onClick = function(event) {
+  'use strict';
+  var permitted;
+
+  // It's possible for another FastClick-like library delivered with third-party code to fire a click event before FastClick does (issue #44). In that case, set the click-tracking flag back to false and return early. This will cause onTouchEnd to return early.
+  if (this.trackingClick) {
+    this.targetElement = null;
+    this.trackingClick = false;
+    return true;
+  }
+
+  // Very odd behaviour on iOS (issue #18): if a submit element is present inside a form and the user hits enter in the iOS simulator or clicks the Go button on the pop-up OS keyboard the a kind of 'fake' click event will be triggered with the submit-type input element as the target.
+  if (event.target.type === 'submit' && event.detail === 0) {
+    return true;
+  }
+
+  permitted = this.onMouse(event);
+
+  // Only unset targetElement if the click is not permitted. This will ensure that the check for !targetElement in onMouse fails and the browser's click doesn't go through.
+  if (!permitted) {
+    this.targetElement = null;
+  }
+
+  // If clicks are permitted, return true for the action to go through.
+  return permitted;
+};
+
+
+/**
+ * Remove all FastClick's event listeners.
+ *
+ * @returns {void}
+ */
+FastClick.prototype.destroy = function() {
+  'use strict';
+  var layer = this.layer;
+
+  if (deviceIsAndroid) {
+    layer.removeEventListener('mouseover', this.onMouse, true);
+    layer.removeEventListener('mousedown', this.onMouse, true);
+    layer.removeEventListener('mouseup', this.onMouse, true);
+  }
+
+  layer.removeEventListener('click', this.onClick, true);
+  layer.removeEventListener('touchstart', this.onTouchStart, false);
+  layer.removeEventListener('touchmove', this.onTouchMove, false);
+  layer.removeEventListener('touchend', this.onTouchEnd, false);
+  layer.removeEventListener('touchcancel', this.onTouchCancel, false);
+};
+
+
+/**
+ * Check whether FastClick is needed.
+ *
+ * @param {Element} layer The layer to listen on
+ */
+FastClick.notNeeded = function(layer) {
+  'use strict';
+  var metaViewport;
+  var chromeVersion;
+
+  // Devices that don't support touch don't need FastClick
+  if (typeof window.ontouchstart === 'undefined') {
+    return true;
+  }
+
+  // Chrome version - zero for other browsers
+  chromeVersion = +(/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [,0])[1];
+
+  if (chromeVersion) {
+
+    if (deviceIsAndroid) {
+      metaViewport = document.querySelector('meta[name=viewport]');
+
+      if (metaViewport) {
+        // Chrome on Android with user-scalable="no" doesn't need FastClick (issue #89)
+        if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
+          return true;
+        }
+        // Chrome 32 and above with width=device-width or less don't need FastClick
+        if (chromeVersion > 31 && window.innerWidth <= window.screen.width) {
+          return true;
+        }
+      }
+
+    // Chrome desktop doesn't need FastClick (issue #15)
+    } else {
+      return true;
+    }
+  }
+
+  // IE10 with -ms-touch-action: none, which disables double-tap-to-zoom (issue #97)
+  if (layer.style.msTouchAction === 'none') {
+    return true;
+  }
+
+  return false;
+};
+
+
+/**
+ * Factory method for creating a FastClick object
+ *
+ * @param {Element} layer The layer to listen on
+ */
+FastClick.attach = function(layer) {
+  'use strict';
+  return new FastClick(layer);
+};
+
+
+if (typeof define !== 'undefined' && define.amd) {
+
+  // AMD. Register as an anonymous module.
+  define(function() {
+    'use strict';
+    return FastClick;
+  });
+} else if (typeof module !== 'undefined' && module.exports) {
+  module.exports = FastClick.attach;
+  module.exports.FastClick = FastClick;
+} else {
+  window.FastClick = FastClick;
+}
+
+;(function(e){if("function"==typeof bootstrap)bootstrap("jade",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeJade=e}else"undefined"!=typeof window?window.jade=e():global.jade=e()})(function(){var define,ses,bootstrap,module,exports;
 return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 /*!

@@ -1,3 +1,5 @@
+app = require("app")
+
 class Level2View extends Backbone.View
 
   template: require "./templates/level2"
@@ -7,6 +9,7 @@ class Level2View extends Backbone.View
     @$el.html(@template())
 
   show: ->
+    app.router.navigate("level2", true)
     console.log "Show Level 2"
 
   hide: ->

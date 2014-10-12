@@ -217,7 +217,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.onStart = function(e) {
-      var nextView, offset, prevView, _e;
+      var index, nextView, offset, prevView, _e, _ref;
       if (this.stack.length < 2 || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
         return;
       }
@@ -227,7 +227,12 @@ var __hasProp = {}.hasOwnProperty,
       this.transform = this.slideTransform;
       if (_e.pageX - offset.left < 40) {
         prevView = this.stack[this.stack.length - 1];
-        nextView = this.stack[this.stack.length - 2];
+        index = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView) : void 0) - 1;
+        if (index >= 0) {
+          nextView = this.views[prev.stack[index]];
+        } else {
+          nextView = this.stack[this.stack.length - 2];
+        }
         prevView.$el.css({
           zIndex: this.stack.length
         });

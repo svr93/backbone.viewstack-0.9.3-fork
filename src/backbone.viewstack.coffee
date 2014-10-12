@@ -7,24 +7,32 @@ do ->
 
   class Backbone.ViewStack extends Backbone.View
 
+    defaults:
+      viewPath: "views/"
+      headClass: ".view-head"
+      bodyClass: ".view-body"
+      ms: 300
+
     el: "#views"
 
-    # A dictionary of all views that have been created
+    # A dictionary of all views that have been created.
     views: {}
 
-    # An array of views in the current stack from bottom to top
+    # An array of views in the current stack from bottom to top.
     stack: []
 
     # On the first run, we prevent the push mechanic from causing a transition.
     # This is later used to prevent pushes when manually swiping.
-    preventPush: true
+    preventTransition: true
+
+    # Remember when we fade in views, so we can fade them out.
+    didFadeAndPush: false
 
     initialize: (options) ->
-      console?.error "Declare viewpath for views" unless options.viewPath
-      @viewPath = options.viewPath
+      for key, val of _.extend({}, @defaults, options)
+        @[key] = val
 
-      @headClass = options.headClass or ".view-head"
-      @bodyClass = options.bodyClass or ".view-body"
+      console?.error "Declare viewpath for views" unless @viewPath
 
       return this
 
@@ -39,12 +47,13 @@ do ->
 
     # If no `el` is defined in options, create a new element and append to the
     # `#views` element. Create the view, hide it and add it to the stack.
-    create: (name, View, options = {}) =>
+    create: (name, View, options = {}) ->
       unless options.el?
         options.el = $("<div class='view' id='#{@identify(name)}' />")
         @$el.append options.el
 
       view = new View(options)
+      view.__key = name
       view.__head = view.$(@headClass)
       view.__body = view.$(@bodyClass)
       view.$el.hide()
@@ -66,7 +75,6 @@ do ->
       else
         viewClass = require @viewPath + name
         nextView = @create name, viewClass, options
-
         if @stack.length is 0 and nextView.stack
           for _name, i in nextView.stack when _name isnt name
             viewClass = require @viewPath + _name
@@ -79,16 +87,32 @@ do ->
       prevView = @stack[@stack.length - 1]
 
       # Assume we're pushing if the new view is already in the stack.
-      push = @stack.indexOf(nextView) < 0
+      isPush = @stack.indexOf(nextView) < 0
 
       # We're popping if the previous view explicitly declares so.
       if prevView?.stack?.indexOf(name) > -1
-        push = false
+        isPush = false
 
-      if (push and not @preventPush) or @stack.length is 0
+      # Custom transitions means we remove swiping.
+      if options.transition
+        @undelegateEvents()
+      else
+        @delegateEvents()
+
+      # Set the transition to be used
+      if options.transition
+        @didFadeAndPush = true
+        @transform = @["#{options.transition}Transform"]
+      else if not @didFadeAndPush
+        @didFadeAndPush = false
+        @transform = @slideTransform
+
+      if isPush or @stack.length is 0 and not @preventTransition
         @pushView(nextView)
+
       else
         @stack = @stack.slice(0, @stack.indexOf(nextView) + 1).concat(prevView)
+
         # Ensure the view we pop to is underneath in the stack
         @stack.unshift(nextView) if @stack.length is 1
         @popView()
@@ -108,12 +132,12 @@ do ->
     activateCurrentView: (prevView, isPush) ->
       nextView = @stack[@stack.length - 1]
 
-      @cleaup(nextView.$el)
+      @cleanup(nextView.$el)
 
-      if @preventPush
+      if @preventTransition
         nextView.delegateEvents().$el.show().addClass("active")
         prevView?.$el.hide()
-        @preventPush = false
+        @preventTransition = false
 
       else if prevView isnt nextView
         prevView.undelegateEvents().hide?()
@@ -130,34 +154,35 @@ do ->
         @transitionView prevView, false
 
         # ... and then set initial transforms
-        @transformView prevView, 0, not isPush
-        @transformView nextView, @endRatio(isPush), isPush
+        @transform prevView, 0, not isPush
+        @transform nextView, @endRatio(isPush), isPush
 
-        window.clearTimeout @transitionInTimeout
-        @transitionInTimeout = window.setTimeout (=>
+        @$el.get(0).offsetWidth
 
-          # Add transitions and set new transforms
-          @transitionView nextView, true
-          @transitionView prevView, true
-          @transformView nextView, 0, not isPush
-          @transformView prevView, @endRatio(not isPush), not isPush
+        # Add transitions and set new transforms
+        @transitionView nextView, true
+        @transitionView prevView, true
+        @transform nextView, 0, not isPush
+        @transform prevView, @endRatio(not isPush), not isPush
 
-          # After the transition has occured, hide
-          window.clearTimeout @transitionOutTimeout
-          @transitionOutTimeout = window.setTimeout (=>
-            nextView.delegateEvents()
-            prevView.$el.hide().removeClass("active")
-          ), 300
-        ), 10
+        # After the transition has occured, hide
+        window.clearTimeout @transitionOutTimeout
+        @transitionOutTimeout = window.setTimeout (=>
+          nextView.delegateEvents()
+          prevView.$el.hide().removeClass("active")
+          @clearTransforms nextView
+          @clearTransforms prevView
+        ), @ms + 100
 
     # Cleanup views if navigating very quickly without harming transitions.
     # These views have already had their events undelegated, so we just need
     # to hide them and remove their active clase.
-    cleaup: ($el) ->
+    cleanup: ($el) ->
       window.clearTimeout @cleanupTimeout
       @cleanupTimeout = window.setTimeout (=>
-        @$el.children(".active").not($el).hide().removeClass("active")
-      ), 300
+        if $el.hasClass("active") and not @slide
+          @$(".view").not($el).hide().removeClass("active")
+      ), @ms
 
     # The ratio at the end of a transtion.
     # When popping, views only move halfway back.
@@ -186,10 +211,16 @@ do ->
       offset = @$el.offset()
 
       @hasSlid = false
+      @transform = @slideTransform
 
       if _e.pageX - offset.left < 40
         prevView = @stack[@stack.length - 1]
-        nextView = @stack[@stack.length - 2]
+        index = prevView.stack?.indexOf(prevView) - 1
+
+        if index >= 0
+          nextView = @views[prev.stack[index]]
+        else
+          nextView = @stack[@stack.length - 2]
 
         prevView.$el.css zIndex: @stack.length
         nextView.$el.css zIndex: @stack.length - 1
@@ -235,8 +266,8 @@ do ->
             (_e.pageX - @slide.offset.left - @slide.startX) / @slide.offset.width
           , 0), 1)
 
-        @transformView(@slide.prev, @slide.ratio, true)
-        @transformView(@slide.next, -(1 - @slide.ratio) * 0.5, false)
+        @transform(@slide.prev, @slide.ratio, true)
+        @transform(@slide.next, -(1 - @slide.ratio) * 0.5, false)
 
     # If the slide object exists, remove the transition styles from the current
     # views. We'll pop the current view if we've slid over half of the screen,
@@ -256,23 +287,28 @@ do ->
         prev = @slide.prev
 
         if @slide.ratio > 0.5
-          @transformView prev, @endRatio(true), true
-          @transformView next, 0, true
-          @preventPush = true
+          @transform prev, @endRatio(true), true
+          @transform next, 0, true
+          @preventTransition = true
+          @cleanup(@slide.next.$el)
           window.clearTimeout @transitionEndTimeout
           @transitionEndTimeout = window.setTimeout (=>
-            window.history.back()
-          ), 400
+            if @isLinear
+              window.history.back()
+            else
+              @show(next.__key)
+          ), @ms + 100
         else
-          @transformView prev, 0, false
-          @transformView next, @endRatio(false), false
+          @transform prev, 0, false
+          @transform next, @endRatio(false), false
+          @cleanup(@slide.prev.$el)
           prev.delegateEvents()
 
       @slide = null
 
     # Set the transition on the view's head and body.
     transitionView: (view, willTransition) ->
-      transition = if willTransition then "all 300ms" else "none"
+      transition = if willTransition then "all #{@ms}ms" else "none"
 
       view.__head.add(view.__body).css
         "-webkit-transition": transition
@@ -281,10 +317,10 @@ do ->
         "-o-transition": transition
         "transition": transition
 
-    # Transforms affect the view in several ways. The ratio dictates its
+    # Sliding affects the view in several ways. The ratio dictates its
     # position, but also opacity of the view's body if it is pushing, and the
     # view's head if it is popping.
-    transformView: (view, ratio, isPush) ->
+    slideTransform: (view, ratio, isPush) ->
       if view
         transform = "translate3d(#{ratio * 100}%, 0, 0)"
 
@@ -298,3 +334,42 @@ do ->
 
         view.__head.css
           "opacity": if isPush then 1 - ratio else 1
+
+    # Scale both views down, the view on top ending at 100%.
+    zoomTransform: (view, ratio, isPush) ->
+      if view
+        transform = "translate3d(0, 0, 0) scale(#{1 + ratio * 0.5})"
+
+        view.__body.css
+          "-webkit-transform": transform
+          "-moz-transform": transform
+          "-ms-transform": transform
+          "-o-transform": transform
+          "transform": transform
+          "opacity": if isPush then 1 - ratio else 1
+
+        view.__head.css
+          "opacity": if isPush then 1 - ratio else 1
+
+    # Simply fade the new view in over the preceding view
+    fadeTransform: (view, ratio, isPush) ->
+      if view
+        view.__body.css
+          "opacity": if isPush then 1 - ratio else 1
+
+        view.__head.css
+          "opacity": if isPush then 1 - ratio else 1
+
+    # Remove any transforms set during transitions
+    clearTransforms: (view, ratio, isPush) ->
+      if view
+        view.__body.css
+          "-webkit-transform": ""
+          "-moz-transform": ""
+          "-ms-transform": ""
+          "-o-transform": ""
+          "transform": ""
+          "opacity": ""
+
+        view.__head.css
+          "opacity": ""

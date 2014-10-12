@@ -10,7 +10,6 @@ body {
   line-height: 1.25em;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
   -webkit-text-size-adjust: none;
   -moz-text-size-adjust: none;
   -ms-text-size-adjust: none;
@@ -24,7 +23,8 @@ body {
 
 a {
   color: inherit;
-  text-decoration: none; }
+  text-decoration: none;
+  -webkit-touch-callout: none; }
 
 h1, h2, p {
   margin: 8px 0; }
@@ -34,6 +34,15 @@ h1 {
 
 h2 {
   font-size: 17px; }
+
+code {
+  background: #cccccc;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: left;
+  display: block; }
+  code pre {
+    margin: 0; }
 
 #views {
   position: absolute;
@@ -78,12 +87,17 @@ h2 {
 
 .button {
   display: block;
-  margin: 10px;
+  margin: 10px 0;
   padding: 10px;
   border: 1px solid;
   border-radius: 4px; }
   .button:active {
     background: #cccccc; }
+
+#views #level4-view h1 {
+  text-transform: capitalize; }
+#views #level4-view .view-body {
+  top: 0; }
 
 /* backbone.viewstack - v0.0.3 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */

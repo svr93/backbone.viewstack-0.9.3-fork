@@ -10,13 +10,13 @@ body
   line-height: 1.25em
   overflow: hidden
   -webkit-tap-highlight-color: transparent
-  -webkit-touch-callout: none
   +experimental(text-size-adjust, none)
   +experimental(user-select, none)
 
 a
   color: inherit
   text-decoration: none
+  -webkit-touch-callout: none
 
 h1, h2, p
   margin: 8px 0
@@ -26,6 +26,16 @@ h1
 
 h2
   font-size: 17px
+
+code
+  background: #ccc
+  padding: 10px
+  border-radius: 5px
+  text-align: left
+  display: block
+
+  pre
+    margin: 0
 
 #views
   position: absolute
@@ -74,10 +84,17 @@ h2
 
 .button
   display: block
-  margin: 10px
+  margin: 10px 0
   padding: 10px
   border: 1px solid
   border-radius: 4px
 
   &:active
     background: #ccc
+
+#views #level4-view
+  h1
+    text-transform: capitalize
+
+  .view-body
+    top: 0

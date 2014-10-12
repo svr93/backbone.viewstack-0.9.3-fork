@@ -1,0 +1,11 @@
+.view-body: .content
+  h1.name Type
+
+  p If you show a new view and set a transition, the stack assumes the view should leave the same way it entered.
+
+  code: pre.
+    viewstack.show("name", {
+      transition: "<span class="name">type</span>"
+    })
+
+  a.button(href="#level2") Close

@@ -12,10 +12,6 @@ body
   position: relative
   -webkit-tap-highlight-color: transparent
   -webkit-text-size-adjust: none
-  -webkit-user-select: none
-  -moz-user-select: none
-  user-select: none
-
 img
   max-width: 100%
 
@@ -42,7 +38,6 @@ code
   border-radius: 5px
   text-align: left
   padding: 1px 5px
-  font-family: "monaco", monospace
   font-size: 13px
 
 pre code
@@ -56,3 +51,14 @@ pre code
   a:hover
     color: #222
     text-decoration: underline
+
+.github-btn
+  position: absolute
+  right: 3px
+  bottom: 5px
+  z-index: 100
+
+  .with-readme &
+    right: 50%
+    margin-right: 90px
+    bottom: 20px

@@ -1,19 +1,23 @@
 #views
   position: absolute
-  top: 50%
-  left: 50%
-  max-width: 320px
-  max-height: 568px
-  margin: -230px -160px
+  width: 100%
+  height: 100%
   background-color: #666
   box-shadow: 0 2px 6px #ccc
+  -webkit-user-select: none
+  -moz-user-select: none
+  user-select: none
 
   .with-readme &
     left: 25%
     +transform(translate3d(0, 0, 0))
 
-  @media screen and (min-height: 548px)
-    margin-top: -284px
+  @media screen and (min-height: 549px) and (min-width: 640px)
+    width: 320px
+    height: 548px
+    top: 50%
+    left: 50%
+    margin: -274px -160px
 
 .nav-bar
   color: #fff
@@ -78,12 +82,6 @@
 
   &:active
     background: rgba(0, 0, 0, 0.1)
-
-.github-btn
-  position: absolute
-  right: 20px
-  bottom: 20px
-  z-index: 100
 
 #level4-view
   h1

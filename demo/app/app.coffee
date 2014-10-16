@@ -15,8 +15,10 @@ Application =
       $("#version").html(require("README").version)
 
     # Remove scroll from demo
-    $("#views").on "touchstart", (e) ->
-      e.preventDefault()
+    $("#views").on "touchmove", (e) ->
+      viewBody = $(e.target).parents(".view-body").get(0)
+      unless viewBody and viewBody.offsetHeight < viewBody.scrollHeight
+        e.preventDefault()
 
 module.exports = Application
 

@@ -4,12 +4,24 @@
   .with-readme &
     display: block
     position: absolute
-    top: 20px
+    bottom: 20px
     right: 50%
     margin-right: 20px
-    padding: 5px
-    border-radius: 5px
+    padding: 4px 6px
+    border-radius: 4px
+    color: #333
+    font-family: "Helvetica Nueue", Helvetica, Arial, sans-serif
+    font-weight: bold
+    border: 1px solid #D4D4D4
+    border-bottom-color: #BCBCBC
     background: #eee
+    +background(linear-gradient(#FAFAFA, #EAEAEA))
 
     &:before
       content: "v"
+
+    &:hover
+      color: #fff
+      border-color: darken(#15a89d, 5)
+      +background(linear-gradient(#15a89d, darken(#15a89d, 5)))
+

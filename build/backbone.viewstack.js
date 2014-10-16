@@ -279,19 +279,21 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.onStart = function(e) {
-      var index, nextView, offset, prevView, _e, _ref;
-      if (this.stack.length < 2 || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
+      var inPrevStack, index, nextView, prevView, _e, _ref;
+      prevView = this.stack[this.stack.length - 1];
+      inPrevStack = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView.__key) : void 0) > 0;
+      if ((this.stack.length < 2 && !inPrevStack) || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
         return;
       }
       _e = isTouch ? e.touches[0] : e;
-      offset = this.$el.offset();
+      if (this.offset == null) {
+        this.offset = this.$el.offset();
+      }
       this.hasSlid = false;
-      this.transform = this.slideTransform;
-      if (_e.pageX - offset.left < 40) {
-        prevView = this.stack[this.stack.length - 1];
-        index = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView) : void 0) - 1;
-        if (index >= 0) {
-          nextView = this.views[prev.stack[index]];
+      if (_e.pageX - this.offset.left < 40) {
+        if (inPrevStack) {
+          index = prevView.stack.indexOf(prevView.__key) - 1;
+          nextView = this.views[prevView.stack[index]];
         } else {
           nextView = this.stack[this.stack.length - 2];
         }
@@ -302,9 +304,8 @@ var __hasProp = {}.hasOwnProperty,
           zIndex: this.stack.length - 1
         });
         this.slide = {
-          startX: _e.pageX - offset.left,
+          startX: _e.pageX - this.offset.left,
           startY: _e.pageY,
-          offset: offset,
           prev: prevView,
           next: nextView
         };
@@ -322,12 +323,13 @@ var __hasProp = {}.hasOwnProperty,
       }
       _e = isTouch ? e.touches[0] : e;
       if (!this.hasSlid) {
-        if (Math.abs(_e.pageX - this.slide.offset.left - this.slide.startX) > 10) {
+        if (Math.abs(_e.pageX - this.offset.left - this.slide.startX) > 10) {
           this.hasSlid = true;
           this.slide.prev.undelegateEvents();
           this.slide.next.undelegateEvents();
           this.transitionView(this.slide.prev, false);
           this.transitionView(this.slide.next, false);
+          this.transform = this.slideTransform;
           this.slide.next.$el.show();
           this.slide.prev.$el.show();
         } else if (Math.abs(_e.pageY - this.slide.startY) > 20) {
@@ -336,7 +338,7 @@ var __hasProp = {}.hasOwnProperty,
       }
       if (this.hasSlid) {
         e.stopPropagation();
-        this.slide.ratio = Math.min(Math.max((_e.pageX - this.slide.offset.left - this.slide.startX) / this.slide.offset.width, 0), 1);
+        this.slide.ratio = Math.min(Math.max((_e.pageX - this.offset.left - this.slide.startX) / this.offset.width, 0), 1);
         this.transform(this.slide.prev, this.slide.ratio, true);
         return this.transform(this.slide.next, -(1 - this.slide.ratio) * 0.5, false);
       }
@@ -439,7 +441,7 @@ var __hasProp = {}.hasOwnProperty,
       }
     };
 
-    ViewStack.prototype.clearTransforms = function(view, ratio, isPush) {
+    ViewStack.prototype.clearTransforms = function(view) {
       if (view) {
         view.__body.css({
           "-webkit-transform": "",

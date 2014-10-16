@@ -149,10 +149,7 @@ body {
   overflow: hidden;
   position: relative;
   -webkit-tap-highlight-color: transparent;
-  -webkit-text-size-adjust: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none; }
+  -webkit-text-size-adjust: none; }
 
 img {
   max-width: 100%; }
@@ -180,7 +177,6 @@ code {
   border-radius: 5px;
   text-align: left;
   padding: 1px 5px;
-  font-family: "monaco", monospace;
   font-size: 13px; }
 
 pre code {
@@ -194,15 +190,25 @@ pre code {
   color: #222222;
   text-decoration: underline; }
 
+.github-btn {
+  position: absolute;
+  right: 3px;
+  bottom: 5px;
+  z-index: 100; }
+  .with-readme .github-btn {
+    right: 50%;
+    margin-right: 90px;
+    bottom: 20px; }
+
 #views {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  max-width: 320px;
-  max-height: 568px;
-  margin: -230px -160px;
+  width: 100%;
+  height: 100%;
   background-color: #666666;
-  box-shadow: 0 2px 6px #cccccc; }
+  box-shadow: 0 2px 6px #cccccc;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none; }
   .with-readme #views {
     left: 25%;
     -webkit-transform: translate3d(0, 0, 0);
@@ -210,9 +216,13 @@ pre code {
     -ms-transform: translate3d(0, 0, 0);
     -o-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0); }
-  @media screen and (min-height: 548px) {
+  @media screen and (min-height: 549px) and (min-width: 640px) {
     #views {
-      margin-top: -284px; } }
+      width: 320px;
+      height: 548px;
+      top: 50%;
+      left: 50%;
+      margin: -274px -160px; } }
 
 .nav-bar {
   color: white;
@@ -282,12 +292,6 @@ pre code {
   cursor: pointer; }
   .button:active {
     background: rgba(0, 0, 0, 0.1); }
-
-.github-btn {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  z-index: 100; }
 
 #level4-view h1 {
   text-transform: capitalize; }
@@ -365,21 +369,42 @@ pre code {
     bottom: 20px;
     font-size: 14px;
     color: #999999;
-    z-index: 100; }
+    z-index: 100;
+    padding: 5px; }
 
 #version {
   display: none; }
   .with-readme #version {
     display: block;
     position: absolute;
-    top: 20px;
+    bottom: 20px;
     right: 50%;
     margin-right: 20px;
-    padding: 5px;
-    border-radius: 5px;
-    background: #eeeeee; }
+    padding: 4px 6px;
+    border-radius: 4px;
+    color: #333333;
+    font-family: "Helvetica Nueue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    border: 1px solid #d4d4d4;
+    border-bottom-color: #bcbcbc;
+    background: #eeeeee;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fafafa), color-stop(100%, #eaeaea));
+    background: -webkit-linear-gradient(#fafafa, #eaeaea);
+    background: -moz-linear-gradient(#fafafa, #eaeaea);
+    background: -o-linear-gradient(#fafafa, #eaeaea);
+    background: -ms-linear-gradient(#fafafa, #eaeaea);
+    background: linear-gradient(#fafafa, #eaeaea); }
     .with-readme #version:before {
       content: "v"; }
+    .with-readme #version:hover {
+      color: white;
+      border-color: #129188;
+      background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #15a89d), color-stop(100%, #129188));
+      background: -webkit-linear-gradient(#15a89d, #129188);
+      background: -moz-linear-gradient(#15a89d, #129188);
+      background: -o-linear-gradient(#15a89d, #129188);
+      background: -ms-linear-gradient(#15a89d, #129188);
+      background: linear-gradient(#15a89d, #129188); }
 
 
 /*# sourceMappingURL=app.css.map*/

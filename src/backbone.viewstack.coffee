@@ -26,7 +26,7 @@ do ->
     preventTransition: true
 
     # Remember when we fade in views, so we can fade them out.
-    didFadeAndPush: false
+    willCustomPush: false
 
     initialize: (options) ->
       for key, val of _.extend({}, @defaults, options)
@@ -48,16 +48,18 @@ do ->
     # If no `el` is defined in options, create a new element and append to the
     # `#views` element. Create the view, hide it and add it to the stack.
     create: (name, View, options = {}) ->
+      key = options.key or name
+
       unless options.el?
-        options.el = $("<div class='view' id='#{@identify(name)}' />")
+        options.el = $("<div class='view' id='#{@identify(key)}' />")
         @$el.append options.el
 
       view = new View(options)
-      view.__key = name
+      view.__key = key
       view.__head = view.$(@headClass)
       view.__body = view.$(@bodyClass)
       view.$el.hide()
-      @views[name] = view
+      @views[key] = view
 
     # Get the view from the dictionary, or create it if it doesn't exist.
     # Decide whether to pop or push the view, and build the stack if its the
@@ -66,9 +68,7 @@ do ->
     # add the current view. This occurs when we refresh the browser on a view
     # part way down the stack.
     show: (name, options = {}) ->
-      {key} = options
-
-      key ?= name
+      key = options.key or name
 
       if @views[key]?
         nextView = @views[key]
@@ -93,6 +93,9 @@ do ->
       if prevView?.stack?.indexOf(name) > -1
         isPush = false
 
+      if options.isDialog
+        @willShowDialog = true
+
       # Custom transitions means we remove swiping.
       if options.transition
         @undelegateEvents()
@@ -101,21 +104,26 @@ do ->
 
       # Set the transition to be used
       if options.transition
-        @didFadeAndPush = true
+        @willCustomPush = true
         @transform = @["#{options.transition}Transform"]
-      else if not @didFadeAndPush
-        @didFadeAndPush = false
+      else if not @willCustomPush
+        @willCustomPush = false
         @transform = @slideTransform
 
       if isPush or @stack.length is 0 and not @preventTransition
         @pushView(nextView)
 
       else
+        if @willShowDialog
+          prevView = @removeDialog(nextView) or prevView
+
         @stack = @stack.slice(0, @stack.indexOf(nextView) + 1).concat(prevView)
 
         # Ensure the view we pop to is underneath in the stack
         @stack.unshift(nextView) if @stack.length is 1
         @popView()
+        @willHideDialog = false
+        @willCustomPush = false unless options.transition
 
     # Get the last view in the stack, push the new view and activate it.
     pushView: (view) ->
@@ -127,12 +135,26 @@ do ->
     popView: ->
       @activateCurrentView(@stack.pop(), false)
 
+    # If we have to remove the dialog, we pop as normal set willHideDialog to
+    # true. However, if we route to another view (not the last) we use a normal
+    # transform and remove the dialog immediately.
+    removeDialog: (nextView) ->
+      @willShowDialog = false
+
+      if @stack.indexOf(nextView) is @stack.length - 2
+        @willHideDialog = true
+        return
+      else
+        @transform @stack.pop().undelegateEvents(), 1, true
+        @transform = @slideTransform
+        return @stack[@stack.length - 1]
+
     # Perform two transitions synchronously. Get the next view, and get it
     # ready to animate. Remove events from the old view.
     activateCurrentView: (prevView, isPush) ->
       nextView = @stack[@stack.length - 1]
 
-      @cleanup(nextView.$el)
+      @cleanup(nextView.$el) unless @willShowDialog
 
       if @preventTransition
         nextView.delegateEvents().$el.show().addClass("active")
@@ -154,22 +176,27 @@ do ->
         @transitionView prevView, false
 
         # ... and then set initial transforms
-        @transform prevView, 0, not isPush
-        @transform nextView, @endRatio(isPush), isPush
+        @transform prevView, 0, not isPush unless @willShowDialog
+
+        unless @willHideDialog
+          @transform nextView, @endRatio(isPush), isPush
 
         @$el.get(0).offsetWidth
 
         # Add transitions and set new transforms
         @transitionView nextView, true
-        @transitionView prevView, true
         @transform nextView, 0, not isPush
-        @transform prevView, @endRatio(not isPush), not isPush
+
+        unless @willShowDialog
+          @transitionView prevView, true
+          @transform prevView, @endRatio(not isPush), not isPush
 
         # After the transition has occured, hide
         window.clearTimeout @transitionOutTimeout
         @transitionOutTimeout = window.setTimeout (=>
           nextView.delegateEvents()
-          prevView.$el.hide().removeClass("active")
+          prevView.$el.removeClass("active")
+          prevView.$el.hide() unless @willShowDialog
           @clearTransforms nextView
           @clearTransforms prevView
         ), @ms + 100
@@ -291,10 +318,13 @@ do ->
           @transform next, 0, true
           @preventTransition = true
           @cleanup(@slide.next.$el)
+          @undelegateEvents()
+
           window.clearTimeout @transitionEndTimeout
           @transitionEndTimeout = window.setTimeout (=>
             if @isLinear
               window.history.back()
+              @delegateEvents()
             else
               @show(next.__key)
           ), @ms + 100
@@ -338,7 +368,7 @@ do ->
     # Scale both views down, the view on top ending at 100%.
     zoomTransform: (view, ratio, isPush) ->
       if view
-        transform = "translate3d(0, 0, 0) scale(#{1 + ratio * 0.5})"
+        transform = "translate3d(0, 0, 0) scale(#{1 + ratio * 0.25})"
 
         view.__body.css
           "-webkit-transform": transform

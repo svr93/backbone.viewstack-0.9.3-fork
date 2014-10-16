@@ -251,21 +251,22 @@ do ->
     # transitions on the two views, and ensure that they are visible. We'll
     # also treat the first touch as a move event to start the transitions.
     onStart: (e) ->
-      return if @stack.length < 2 or e.target.nodeName.match /INPUT|TEXTAREA/
+      prevView = @stack[@stack.length - 1]
+      inPrevStack = prevView.stack?.indexOf(prevView.__key) > 0
+
+      return if (@stack.length < 2 and not inPrevStack) or
+                e.target.nodeName.match /INPUT|TEXTAREA/
 
       _e = if isTouch then e.touches[0] else e
 
       @offset ?= @$el.offset()
 
       @hasSlid = false
-      @transform = @slideTransform
 
-        prevView = @stack[@stack.length - 1]
-        index = prevView.stack?.indexOf(prevView) - 1
-
-        if index >= 0
-          nextView = @views[prev.stack[index]]
       if _e.pageX - @offset.left < 40
+        if inPrevStack
+          index = prevView.stack.indexOf(prevView.__key) - 1
+          nextView = @views[prevView.stack[index]]
         else
           nextView = @stack[@stack.length - 2]
 
@@ -298,6 +299,7 @@ do ->
           @slide.next.undelegateEvents()
           @transitionView @slide.prev, false
           @transitionView @slide.next, false
+          @transform = @slideTransform
           @slide.next.$el.show()
           @slide.prev.$el.show()
 

@@ -12,6 +12,7 @@ do ->
       headClass: ".view-head"
       bodyClass: ".view-body"
       ms: 300
+      overwrite: true
 
     el: "#views"
 
@@ -33,6 +34,8 @@ do ->
         @[key] = val
 
       console?.error "Declare viewpath for views" unless @viewPath
+
+      @$el.html("") if @overwrite
 
       return this
 

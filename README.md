@@ -51,6 +51,7 @@ To get started, create a new view stack. A good place to do this is in your app 
         el: "#views",             // optional selector/element for parent
         headClass: ".view-head",  // optional selector for view's nav bar
         bodyClass: ".view-body"   // optional selector for view's content
+        overwrite: true           // optionally replace the element's content
       })
     }
   });

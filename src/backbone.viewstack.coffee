@@ -410,7 +410,7 @@ do ->
           "opacity": if isPush then 1 - ratio else 1
 
     # Remove any transforms set during transitions
-    clearTransforms: (view, ratio, isPush) ->
+    clearTransforms: (view) ->
       if view
         view.__body.css
           "-webkit-transform": ""

@@ -1,4 +1,4 @@
-/* backbone.viewstack - v0.0.4 - MIT */
+/* backbone.viewstack - v0.9.0 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
 #views{position:relative;width:100%;height:100%;overflow:hidden}.view-head{position:absolute;width:100%;height:70px}.view-body{overflow:hidden;position:absolute;top:70px;left:-1px;right:0;bottom:0}.view{position:absolute;left:0;right:0;top:0;bottom:0}

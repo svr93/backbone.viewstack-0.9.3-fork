@@ -22,7 +22,8 @@
     "css-brunch": "> 1.0 < 1.8",
     "jade-brunch": "> 1.0 < 1.8",
     "javascript-brunch": "> 1.0 < 1.8",
-    "sass-brunch": "> 1.0 < 1.8"
+    "sass-brunch": "> 1.0 < 1.8",
+    "yaml-front-matter-brunch": "^0.2.7"
   },
   "devDependencies": {}
 }

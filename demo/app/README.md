@@ -1,3 +1,7 @@
+---
+version: 0.0.4
+---
+
 ## backbone.viewstack.js
 
 ### What is it?

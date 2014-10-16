@@ -1,0 +1,143 @@
+#views
+  position: absolute
+  top: 50%
+  left: 50%
+  max-width: 320px
+  max-height: 568px
+  margin: -230px -160px
+  background-color: #666
+  box-shadow: 0 2px 6px #ccc
+
+  .with-readme &
+    left: 25%
+    +transform(translate3d(0, 0, 0))
+
+  @media screen and (min-height: 548px)
+    margin-top: -284px
+
+.nav-bar
+  color: #fff
+  position: absolute
+  height: 69px
+  width: 100%
+  text-align: center
+  line-height: 50px
+  background: #15a89d
+  border-bottom: 1px solid #10776d
+
+  .nav-bar-button-left,
+  .nav-bar-button-right
+    position: absolute
+    width: 40px
+    height: 52px
+    line-height: 54px
+    bottom: 0
+    padding: 18px 10px 0
+    z-index: 10
+
+    &:active
+      opacity: 0.5
+
+  .nav-bar-button-left
+    left: 0
+    text-align: left
+    +background(linear-gradient(left, #15a89d 60%, transparentize(#15a89d, 1)))
+
+  .nav-bar-button-right
+    right: 0
+    text-align: right
+    +background(linear-gradient(right, #15a89d 60%, transparentize(#15a89d, 1)))
+
+  .nav-bar-title
+    font-size: 20px
+    height: 50px
+    margin: 18px 55px 0
+    font-weight: 600
+    position: static
+
+.view > .view-body
+  background: #eee
+  left: -1px
+  border-left: 1px solid rgba(0, 0, 0, 0.1)
+  background-clip: padding-box
+  overflow: auto
+  -webkit-overflow-scrolling: touch
+  bottom: -1px
+
+.content
+  padding: 20px
+  text-align: center
+
+.button
+  display: block
+  margin-top: 10px
+  padding: 10px
+  border: 1px solid
+  border-radius: 4px
+  cursor: pointer
+
+  &:active
+    background: rgba(0, 0, 0, 0.1)
+
+.github-btn
+  position: absolute
+  right: 20px
+  bottom: 20px
+  z-index: 100
+
+#level4-view
+  h1
+    text-transform: capitalize
+
+  .close-button
+    position: absolute
+    top: 10px
+    right: 0
+    font-size: 60px
+    width: 60px
+    height: 60px
+    line-height: 60px
+    text-align: center
+
+    &:active
+      color: #10776d
+
+  .view-body
+    top: 0
+    display: -webkit-box
+    -webkit-box-orient: vertical
+    -webkit-box-pack: center
+    color: #fff
+    background: #18968d
+
+    code
+      background: rgba(255, 255, 255, 0.2)
+
+#alert-view
+  .view-body
+    top: 0
+    background: rgba(0, 0, 0, 0.8)
+
+  h3, p
+    margin: 0 0 10px
+
+  .alert-content
+    padding: 20px
+    text-align: center
+    background: #e8e8e8
+    height: 184px
+    margin: -112px 20px
+    position: absolute
+    top: 50%
+    border-radius: 10px
+
+    .button
+      margin: 0 -20px 0
+      border-radius: 0
+      border: none
+      border-top: 1px solid #ccc
+
+    .button:last-child
+      margin-bottom: -20px
+      border-bottom-left-radius: 10px
+      border-bottom-right-radius: 10px

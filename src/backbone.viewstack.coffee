@@ -61,8 +61,25 @@ do ->
       view.__key = key
       view.__head = view.$(@headClass)
       view.__body = view.$(@bodyClass)
+
+      view.open ?= (options) => @openView(view, options)
+      view.exit ?= => @exitView(view)
+
       view.$el.hide()
       @views[key] = view
+
+    # Open a new view from a child view
+    openView: (view, options) ->
+      @show(view.__key, options)
+
+    # Exit a view from a child view if the stack is big enough and it is at
+    # the top of the stack
+    exitView: (view) ->
+      if @stack.length > 1 and @stack[@stack.length - 1].__key is view.__key
+        if @isLinear
+          window.history.back()
+        else
+          @show(@stack[@stack.length - 2].__key)
 
     # Get the view from the dictionary, or create it if it doesn't exist.
     # Decide whether to pop or push the view, and build the stack if its the

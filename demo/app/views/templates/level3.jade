@@ -1,13 +1,15 @@
 .view-head.nav-bar
   a.nav-bar-button-left(href="#level2") Back
   
-  .nav-bar-title Level 3
+  .nav-bar-title.view-body More
+
+  .nav-bar-button-right#alert Alert
 
 .view-body: .content
   p The stack is clever enough to figure out whether to pop the view based on the occurance of the new view in the view stack. For this reason, if we jump back to Level 1, the pop will naturally occur without any extra setup.
 
   p If you skipped from Level 1 to 3, Level 2 has not been created. This isn't a problem, though, because Level 3 declares a stack in just the same way as 2. This means that navigating to Level 2 will still pop the view.
 
-  small: pre stack: ["level1", "level2", "level3"]
+  code: small: pre stack: ["level1", "level2", "level3"]
 
-  a.button(href="#level1") Go all the way back to Level 1
+  a.button(href="#level1") Return to the start

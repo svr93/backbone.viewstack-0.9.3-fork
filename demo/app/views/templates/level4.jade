@@ -1,11 +1,12 @@
-.view-body: .content
-  h1.name Type
+.view-body
+  a.close-button(href="#level2") &times;
 
-  p If you show a new view and set a transition, the stack assumes the view should leave the same way it entered.
+  .content
+    h1.name Type
 
-  code: pre.
-    viewstack.show("name", {
-      transition: "<span class="name">type</span>"
-    })
+    p If you show a new view and set a transition, the stack assumes the view should leave the same way it entered.
 
-  a.button(href="#level2") Close
+    code: pre.
+      viewstack.show("name", {
+        transition: "<span class="name">type</span>"
+      })

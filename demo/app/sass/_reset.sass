@@ -10,16 +10,18 @@ body
   line-height: 1.25em
   overflow: hidden
   -webkit-tap-highlight-color: transparent
-  +experimental(text-size-adjust, none)
-  +experimental(user-select, none)
+  -webkit-text-size-adjust: none
+  -webkit-user-select: none
+  -moz-user-select: none
+  user-select: none
 
 a
   color: inherit
   text-decoration: none
   -webkit-touch-callout: none
 
-h1, h2, p
-  margin: 8px 0
+h1, h2, h3, p
+  margin: 0 0 10px
 
 h1
   font-size: 24px
@@ -27,12 +29,16 @@ h1
 h2
   font-size: 17px
 
+h1, h2, h3, h4
+  font-weight: 600
+
 code
   background: #ccc
   padding: 10px
   border-radius: 5px
   text-align: left
   display: block
+  overflow: auto
 
   pre
     margin: 0
@@ -45,38 +51,56 @@ code
   max-height: 568px
   margin: -230px -160px
 
+  @media screen and (min-height: 548px)
+    margin-top: -284px
+
 .nav-bar
   color: #fff
   position: absolute
-  height: 70px
+  height: 69px
   width: 100%
   text-align: center
   line-height: 50px
-  background: #1a1a1a
+  background: #18968d
+  border-bottom: 1px solid #10776d
 
   .nav-bar-button-left,
   .nav-bar-button-right
     position: absolute
-    width: 50px
+    width: 40px
     height: 52px
+    line-height: 54px
     bottom: 0
+    padding: 18px 10px 0
+    z-index: 10
 
     &:active
       opacity: 0.5
 
   .nav-bar-button-left
     left: 0
+    text-align: left
+    +background(linear-gradient(left, #18968d 60%, transparentize(#18968d, 1)))
 
   .nav-bar-button-right
     right: 0
+    text-align: right
+    +background(linear-gradient(right, #18968d 60%, transparentize(#18968d, 1)))
 
   .nav-bar-title
     font-size: 20px
     height: 50px
-    margin: 18px 70px 0
+    margin: 18px 55px 0
+    font-weight: 600
+    position: static
 
-.view-body
+.view > .view-body
   background: #e8e8e8
+  left: -1px
+  border-left: 1px solid rgba(0, 0, 0, 0.2)
+  background-clip: padding-box
+  overflow: auto
+  -webkit-overflow-scrolling: touch
 
 .content
   padding: 20px
@@ -84,17 +108,66 @@ code
 
 .button
   display: block
-  margin: 10px 0
+  margin-top: 10px
   padding: 10px
   border: 1px solid
   border-radius: 4px
+  cursor: pointer
 
   &:active
-    background: #ccc
+    background: rgba(0, 0, 0, 0.2)
 
-#views #level4-view
+#level4-view
   h1
     text-transform: capitalize
 
+  .close-button
+    position: absolute
+    top: 10px
+    right: 0
+    font-size: 60px
+    width: 60px
+    height: 60px
+    line-height: 60px
+    text-align: center
+
+    &:active
+      color: #10776d
+
   .view-body
     top: 0
+    display: -webkit-box
+    -webkit-box-orient: vertical
+    -webkit-box-pack: center
+    color: #fff
+    background: #18968d
+
+    code
+      background: rgba(255, 255, 255, 0.2)
+
+#alert-view
+
+  .view-body
+    top: 0
+    background: rgba(0, 0, 0, 0.8)
+
+  .alert-content
+    padding: 20px
+    text-align: center
+    background: #e8e8e8
+    height: 184px
+    margin: -112px 20px
+    position: absolute
+    top: 50%
+    border-radius: 10px
+
+    .button
+      margin: 0 -20px 0
+      border-radius: 0
+      border: none
+      border-top: 1px solid #ccc
+
+    .button:last-child
+      margin-bottom: -20px
+      border-bottom-left-radius: 10px
+      border-bottom-right-radius: 10px

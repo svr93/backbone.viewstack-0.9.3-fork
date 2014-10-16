@@ -7,22 +7,23 @@
   height: 100%;
   overflow: hidden;
 }
-#views .view-head {
+
+.view-head {
   position: absolute;
   width: 100%;
   height: 70px;
 }
-#views .view-body {
+
+.view-body {
   overflow: hidden;
   position: absolute;
   top: 70px;
   left: -1px;
   right: 0;
   bottom: 0;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-  background-clip: content-box;
 }
-#views .view {
+
+.view {
   position: absolute;
   left: 0;
   right: 0;

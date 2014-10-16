@@ -2,17 +2,17 @@
 
 ### What is it?
 
-backbone.viewstack emulates the native UINavigationController on iOS. It seamlessly manages the navigation between mulitple views and creates a stack on the fly without having to write the boilerplate yourself.
+See the [demo](http://creative-licence-digital.github.io/backbone.viewstack/demo/public/). Try saving it to your home screen for the full impact.
 
-The library provides several core features:
+backbone.viewstack.js provides seamless management of view stacks, allowing fluid transition and navigation between mulitple views and creating a stack on the fly - all without having to write any boilerplate yourself. It's the ideal solution for Cordova/Phonegap based apps that need to provide a native look and feel with a hybrid solution.
 
-- iOS-like transition between views out of the box, where the navigation bar and content transition independently.
+The library offers several core features:
+
+- iOS UINavigationController-like transition between views out of the box, where the navigation bar and content transition independently.
 - Smart management of a stack means pushing and popping is managed easily.
 - Users are able to pop views by swiping from the left 40 pixels of the screen exactly like on native iOS apps.
 - Stacks can be declared within views and created during an app's initialization for dead-simple preloaded views.
 - Transitions use element caches and hardware accelerated transforms for high performance animations, expecially geared towards mobile devices.
-
-See the [demo](http://creative-licence-digital.github.io/backbone.viewstack/demo/public/).
 
 ![http://creative-licence-digital.github.io/backbone.viewstack/demo/public/](/qrcode.png)
 
@@ -112,13 +112,9 @@ If your app can be loaded on views part way down the stack, you can declare a st
 
 backbone.viewstack automatically handles event delegation for your views. When a view is hidden, `undelegateEvents` is called to ensure no events are left around when they're no longer needed.
 
-### Example
-
-This repo includes a sample [brunch](http://brunch.io) application.
-
 ### Transitions
 
-Three transitions are included out of the box. This includes `swipe`, `fade` and `zoom`. Swipe is the default, but if you want to use fade or zoom pass these in the `show` methods options like so:
+Three transitions are included out of the box. These are `swipe`, `fade` and `zoom`. Swipe is the default, but if you want to use fade or zoom pass these in the `show` methods options like so:
 
 ```js
   this.viewstack.show("level1", {transition: "fade"})
@@ -143,6 +139,10 @@ If you want to write your own transitions, add a method to your view stack in th
 `__head` and `__body` are both jQuery/Zepto elements saved onto your Backbone view on initialization. Your view *must* render these onto the DOM at initialization, or you will have to set these yourself. In the same sense, you can use `__head.add($elements)` to add more elements if you wish these to be transitioned/transformed as well.
 
 They are underscored to ensure they don't clash with any view keys you create yourself.
+
+### Example
+
+This repo includes a sample [brunch](http://brunch.io) application to help you get started.
 
 ### Advanced use
 

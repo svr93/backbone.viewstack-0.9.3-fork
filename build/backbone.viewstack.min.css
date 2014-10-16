@@ -1,4 +1,4 @@
 /* backbone.viewstack - v0.0.4 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
-#views{position:relative;width:100%;height:100%;overflow:hidden}#views .view-head{position:absolute;width:100%;height:70px}#views .view-body{overflow:hidden;position:absolute;top:70px;left:-1px;right:0;bottom:0;border-left:1px solid rgba(0,0,0,0.1);background-clip:content-box}#views .view{position:absolute;left:0;right:0;top:0;bottom:0}
+#views{position:relative;width:100%;height:100%;overflow:hidden}.view-head{position:absolute;width:100%;height:70px}.view-body{overflow:hidden;position:absolute;top:70px;left:-1px;right:0;bottom:0}.view{position:absolute;left:0;right:0;top:0;bottom:0}

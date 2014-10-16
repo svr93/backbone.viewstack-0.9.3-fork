@@ -2,16 +2,16 @@
   .nav-bar-button-left
     .icon.icon-menu
   
-  .nav-bar-title Level 1
+  .nav-bar-title.view-body backbone.viewstack.js
 
   .nav-bar-button-right
 
 .view-body: .content
-  p This view is at the start (or bottom) of the stack. You won't be able to pop this view, because there is nothing underneath. This means that manually swiping on the left part of the screen will have no affect.
+  p This view is at the start (or bottom) of the stack. You won't be able to pop this view, because there is nothing underneath. This means that manually swiping on the left part of the screen will have no effect.
 
   p All new views will automatically push onto the stack, unless they already exist within it.
 
-  a.button(href="#level2") Go to Level 2
+  p: a.button(href="#level2") Go to next level
 
-  a(href="#level3"): small Skip to Level 3
+  a(href="#level3"): small Skip ahead
   

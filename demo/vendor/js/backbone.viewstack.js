@@ -24,7 +24,8 @@ var __hasProp = {}.hasOwnProperty,
       viewPath: "views/",
       headClass: ".view-head",
       bodyClass: ".view-body",
-      ms: 300
+      ms: 300,
+      overwrite: true
     };
 
     ViewStack.prototype.el = "#views";
@@ -35,7 +36,7 @@ var __hasProp = {}.hasOwnProperty,
 
     ViewStack.prototype.preventTransition = true;
 
-    ViewStack.prototype.didFadeAndPush = false;
+    ViewStack.prototype.willCustomPush = false;
 
     ViewStack.prototype.initialize = function(options) {
       var key, val, _ref;
@@ -49,6 +50,9 @@ var __hasProp = {}.hasOwnProperty,
           console.error("Declare viewpath for views");
         }
       }
+      if (this.overwrite) {
+        this.$el.html("");
+      }
       return this;
     };
 
@@ -57,20 +61,49 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.create = function(name, View, options) {
-      var view;
+      var key, view;
       if (options == null) {
         options = {};
       }
+      key = options.key || name;
       if (options.el == null) {
-        options.el = $("<div class='view' id='" + (this.identify(name)) + "' />");
+        options.el = $("<div class='view' id='" + (this.identify(key)) + "' />");
         this.$el.append(options.el);
       }
       view = new View(options);
-      view.__key = name;
+      view.__key = key;
       view.__head = view.$(this.headClass);
       view.__body = view.$(this.bodyClass);
+      if (view.open == null) {
+        view.open = (function(_this) {
+          return function(options) {
+            return _this.openView(view, options);
+          };
+        })(this);
+      }
+      if (view.exit == null) {
+        view.exit = (function(_this) {
+          return function() {
+            return _this.exitView(view);
+          };
+        })(this);
+      }
       view.$el.hide();
-      return this.views[name] = view;
+      return this.views[key] = view;
+    };
+
+    ViewStack.prototype.openView = function(view, options) {
+      return this.show(view.__key, options);
+    };
+
+    ViewStack.prototype.exitView = function(view) {
+      if (this.stack.length > 1 && this.stack[this.stack.length - 1].__key === view.__key) {
+        if (this.isLinear) {
+          return window.history.back();
+        } else {
+          return this.show(this.stack[this.stack.length - 2].__key);
+        }
+      }
     };
 
     ViewStack.prototype.show = function(name, options) {
@@ -78,10 +111,7 @@ var __hasProp = {}.hasOwnProperty,
       if (options == null) {
         options = {};
       }
-      key = options.key;
-      if (key == null) {
-        key = name;
-      }
+      key = options.key || name;
       if (this.views[key] != null) {
         nextView = this.views[key];
       } else {
@@ -111,26 +141,36 @@ var __hasProp = {}.hasOwnProperty,
       if ((prevView != null ? (_ref1 = prevView.stack) != null ? _ref1.indexOf(name) : void 0 : void 0) > -1) {
         isPush = false;
       }
+      if (options.isDialog) {
+        this.willShowDialog = true;
+      }
       if (options.transition) {
         this.undelegateEvents();
       } else {
         this.delegateEvents();
       }
       if (options.transition) {
-        this.didFadeAndPush = true;
+        this.willCustomPush = true;
         this.transform = this["" + options.transition + "Transform"];
-      } else if (!this.didFadeAndPush) {
-        this.didFadeAndPush = false;
+      } else if (!this.willCustomPush) {
+        this.willCustomPush = false;
         this.transform = this.slideTransform;
       }
       if (isPush || this.stack.length === 0 && !this.preventTransition) {
         return this.pushView(nextView);
       } else {
+        if (this.willShowDialog) {
+          prevView = this.removeDialog(nextView) || prevView;
+        }
         this.stack = this.stack.slice(0, this.stack.indexOf(nextView) + 1).concat(prevView);
         if (this.stack.length === 1) {
           this.stack.unshift(nextView);
         }
-        return this.popView();
+        this.popView();
+        this.willHideDialog = false;
+        if (!options.transition) {
+          return this.willCustomPush = false;
+        }
       }
     };
 
@@ -145,10 +185,23 @@ var __hasProp = {}.hasOwnProperty,
       return this.activateCurrentView(this.stack.pop(), false);
     };
 
+    ViewStack.prototype.removeDialog = function(nextView) {
+      this.willShowDialog = false;
+      if (this.stack.indexOf(nextView) === this.stack.length - 2) {
+        this.willHideDialog = true;
+      } else {
+        this.transform(this.stack.pop().undelegateEvents(), 1, true);
+        this.transform = this.slideTransform;
+        return this.stack[this.stack.length - 1];
+      }
+    };
+
     ViewStack.prototype.activateCurrentView = function(prevView, isPush) {
       var nextView, _base;
       nextView = this.stack[this.stack.length - 1];
-      this.cleanup(nextView.$el);
+      if (!this.willShowDialog) {
+        this.cleanup(nextView.$el);
+      }
       if (this.preventTransition) {
         nextView.delegateEvents().$el.show().addClass("active");
         if (prevView != null) {
@@ -168,18 +221,27 @@ var __hasProp = {}.hasOwnProperty,
         nextView.$el.show().addClass("active");
         this.transitionView(nextView, false);
         this.transitionView(prevView, false);
-        this.transform(prevView, 0, !isPush);
-        this.transform(nextView, this.endRatio(isPush), isPush);
+        if (!this.willShowDialog) {
+          this.transform(prevView, 0, !isPush);
+        }
+        if (!this.willHideDialog) {
+          this.transform(nextView, this.endRatio(isPush), isPush);
+        }
         this.$el.get(0).offsetWidth;
         this.transitionView(nextView, true);
-        this.transitionView(prevView, true);
         this.transform(nextView, 0, !isPush);
-        this.transform(prevView, this.endRatio(!isPush), !isPush);
+        if (!this.willShowDialog) {
+          this.transitionView(prevView, true);
+          this.transform(prevView, this.endRatio(!isPush), !isPush);
+        }
         window.clearTimeout(this.transitionOutTimeout);
         return this.transitionOutTimeout = window.setTimeout(((function(_this) {
           return function() {
             nextView.delegateEvents();
-            prevView.$el.hide().removeClass("active");
+            prevView.$el.removeClass("active");
+            if (!_this.willShowDialog) {
+              prevView.$el.hide();
+            }
             _this.clearTransforms(nextView);
             return _this.clearTransforms(prevView);
           };
@@ -296,11 +358,13 @@ var __hasProp = {}.hasOwnProperty,
           this.transform(next, 0, true);
           this.preventTransition = true;
           this.cleanup(this.slide.next.$el);
+          this.undelegateEvents();
           window.clearTimeout(this.transitionEndTimeout);
           this.transitionEndTimeout = window.setTimeout(((function(_this) {
             return function() {
               if (_this.isLinear) {
-                return window.history.back();
+                window.history.back();
+                return _this.delegateEvents();
               } else {
                 return _this.show(next.__key);
               }
@@ -349,7 +413,7 @@ var __hasProp = {}.hasOwnProperty,
     ViewStack.prototype.zoomTransform = function(view, ratio, isPush) {
       var transform;
       if (view) {
-        transform = "translate3d(0, 0, 0) scale(" + (1 + ratio * 0.5) + ")";
+        transform = "translate3d(0, 0, 0) scale(" + (1 + ratio * 0.25) + ")";
         view.__body.css({
           "-webkit-transform": transform,
           "-moz-transform": transform,

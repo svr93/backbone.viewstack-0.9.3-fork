@@ -255,17 +255,17 @@ do ->
 
       _e = if isTouch then e.touches[0] else e
 
-      offset = @$el.offset()
+      @offset ?= @$el.offset()
 
       @hasSlid = false
       @transform = @slideTransform
 
-      if _e.pageX - offset.left < 40
         prevView = @stack[@stack.length - 1]
         index = prevView.stack?.indexOf(prevView) - 1
 
         if index >= 0
           nextView = @views[prev.stack[index]]
+      if _e.pageX - @offset.left < 40
         else
           nextView = @stack[@stack.length - 2]
 
@@ -273,9 +273,8 @@ do ->
         nextView.$el.css zIndex: @stack.length - 1
 
         @slide =
-          startX: _e.pageX - offset.left
+          startX: _e.pageX - @offset.left
           startY: _e.pageY
-          offset: offset
           prev: prevView
           next: nextView
 
@@ -293,7 +292,7 @@ do ->
       _e = if isTouch then e.touches[0] else e
 
       if not @hasSlid
-        if Math.abs(_e.pageX - @slide.offset.left - @slide.startX) > 10
+        if Math.abs(_e.pageX - @offset.left - @slide.startX) > 10
           @hasSlid = true
           @slide.prev.undelegateEvents()
           @slide.next.undelegateEvents()
@@ -310,7 +309,7 @@ do ->
 
         @slide.ratio =
           Math.min(Math.max(
-            (_e.pageX - @slide.offset.left - @slide.startX) / @slide.offset.width
+            (_e.pageX - @offset.left - @slide.startX) / @offset.width
           , 0), 1)
 
         @transform(@slide.prev, @slide.ratio, true)

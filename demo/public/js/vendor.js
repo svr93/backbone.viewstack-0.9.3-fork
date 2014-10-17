@@ -138,7 +138,6 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 (function() {
-  "use strict";
   var isTouch;
   isTouch = "ontouchstart" in window;
   if (!Backbone) {
@@ -388,8 +387,8 @@ var __hasProp = {}.hasOwnProperty,
         return function() {
           if ($el.hasClass("active") && !_this.slide) {
             _this.$(".view").not($el).hide().removeClass("active");
+            return $el.show().addClass("active");
           }
-          return _this.delegateEvents();
         };
       })(this)), this.ms);
     };
@@ -413,7 +412,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.onStart = function(e) {
-      var inPrevStack, index, nextView, prevView, _e, _ref, _ref1;
+      var inPrevStack, index, nextView, prevView, _e, _ref;
       prevView = this.stack[this.stack.length - 1];
       inPrevStack = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView.__key) : void 0) > 0;
       if ((this.stack.length < 2 && !inPrevStack) || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
@@ -426,7 +425,7 @@ var __hasProp = {}.hasOwnProperty,
       this.hasSlid = false;
       if (_e.pageX - this.offset.left < 40) {
         if (inPrevStack) {
-          index = ((_ref1 = prevView.stack) != null ? _ref1.indexOf(prevView.__key) : void 0) - 1;
+          index = prevView.stack.indexOf(prevView.__key) - 1;
           nextView = this.views[prevView.stack[index]];
         } else {
           nextView = this.stack[this.stack.length - 2];

@@ -241,7 +241,8 @@ pre code {
     line-height: 54px;
     bottom: 0;
     padding: 18px 10px 0;
-    z-index: 10; }
+    z-index: 10;
+    cursor: pointer; }
     .nav-bar .nav-bar-button-left:active,
     .nav-bar .nav-bar-button-right:active {
       opacity: 0.5; }
@@ -271,7 +272,7 @@ pre code {
     position: static; }
 
 .view > .view-body {
-  background: #eeeeee;
+  background: #f6f6f6;
   left: -1px;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
   background-clip: padding-box;
@@ -318,17 +319,17 @@ pre code {
 
 #alert-view .view-body {
   top: 0;
-  background: rgba(0, 0, 0, 0.8); }
+  background: rgba(0, 0, 0, 0.8);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center; }
 #alert-view h3, #alert-view p {
   margin: 0 0 10px; }
 #alert-view .alert-content {
   padding: 20px;
+  margin: 20px;
   text-align: center;
   background: #e8e8e8;
-  height: 184px;
-  margin: -112px 20px;
-  position: absolute;
-  top: 50%;
   border-radius: 10px; }
   #alert-view .alert-content .button {
     margin: 0 -20px 0;

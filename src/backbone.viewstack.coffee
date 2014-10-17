@@ -223,12 +223,13 @@ do ->
 
     # Cleanup views if navigating very quickly without harming transitions.
     # These views have already had their events undelegated, so we just need
-    # to hide them and remove their active clase.
+    # to hide them and remove their active class.
     cleanup: ($el) ->
       window.clearTimeout @cleanupTimeout
       @cleanupTimeout = window.setTimeout (=>
         if $el.hasClass("active") and not @slide
           @$(".view").not($el).hide().removeClass("active")
+          $el.show().addClass("active")
       ), @ms
 
     # The ratio at the end of a transtion.

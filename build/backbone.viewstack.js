@@ -254,7 +254,8 @@ var __hasProp = {}.hasOwnProperty,
       return this.cleanupTimeout = window.setTimeout(((function(_this) {
         return function() {
           if ($el.hasClass("active") && !_this.slide) {
-            return _this.$(".view").not($el).hide().removeClass("active");
+            _this.$(".view").not($el).hide().removeClass("active");
+            return $el.show().addClass("active");
           }
         };
       })(this)), this.ms);

@@ -38,6 +38,7 @@
     bottom: 0
     padding: 18px 10px 0
     z-index: 10
+    cursor: pointer
 
     &:active
       opacity: 0.5
@@ -60,7 +61,7 @@
     position: static
 
 .view > .view-body
-  background: #eee
+  background: #f6f6f6
   left: -1px
   border-left: 1px solid rgba(0, 0, 0, 0.1)
   background-clip: padding-box
@@ -115,18 +116,18 @@
   .view-body
     top: 0
     background: rgba(0, 0, 0, 0.8)
+    display: -webkit-box
+    -webkit-box-orient: vertical
+    -webkit-box-pack: center
 
   h3, p
     margin: 0 0 10px
 
   .alert-content
     padding: 20px
+    margin: 20px
     text-align: center
     background: #e8e8e8
-    height: 184px
-    margin: -112px 20px
-    position: absolute
-    top: 50%
     border-radius: 10px
 
     .button

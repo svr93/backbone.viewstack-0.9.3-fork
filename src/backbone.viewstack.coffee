@@ -251,12 +251,14 @@ do ->
     # view transitions if the stack contains enough views. We stop any CSS
     # transitions on the two views, and ensure that they are visible. We'll
     # also treat the first touch as a move event to start the transitions.
+    # Use @preventPop to stop the view from popping.
     onStart: (e) ->
       prevView = @stack[@stack.length - 1]
       inPrevStack = prevView.stack?.indexOf(prevView.__key) > 0
 
       return if (@stack.length < 2 and not inPrevStack) or
-                e.target.nodeName.match /INPUT|TEXTAREA/
+                e.target.nodeName.match(/INPUT|TEXTAREA/) or
+                @stack.slice(-1)[0].preventPop is true
 
       _e = if isTouch then e.touches[0] else e
 

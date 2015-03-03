@@ -283,7 +283,7 @@ var __hasProp = {}.hasOwnProperty,
       var inPrevStack, index, nextView, prevView, _e, _ref;
       prevView = this.stack[this.stack.length - 1];
       inPrevStack = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView.__key) : void 0) > 0;
-      if ((this.stack.length < 2 && !inPrevStack) || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
+      if ((this.stack.length < 2 && !inPrevStack) || e.target.nodeName.match(/INPUT|TEXTAREA/) || this.stack.slice(-1)[0].preventPop === true) {
         return;
       }
       _e = isTouch ? e.touches[0] : e;

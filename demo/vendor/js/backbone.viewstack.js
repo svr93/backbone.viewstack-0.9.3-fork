@@ -1,8 +1,8 @@
-/* backbone.viewstack - v0.9.0 - MIT */
+/* backbone.viewstack - v0.9.1 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 (function() {
   "use strict";
@@ -13,8 +13,8 @@ var __hasProp = {}.hasOwnProperty,
       console.error("Ensure Backbone is included before backbone.viewstack");
     }
   }
-  return Backbone.ViewStack = (function(_super) {
-    __extends(ViewStack, _super);
+  return Backbone.ViewStack = (function(superClass) {
+    extend(ViewStack, superClass);
 
     function ViewStack() {
       return ViewStack.__super__.constructor.apply(this, arguments);
@@ -39,10 +39,10 @@ var __hasProp = {}.hasOwnProperty,
     ViewStack.prototype.willCustomPush = false;
 
     ViewStack.prototype.initialize = function(options) {
-      var key, val, _ref;
-      _ref = _.extend({}, this.defaults, options);
-      for (key in _ref) {
-        val = _ref[key];
+      var key, ref, val;
+      ref = _.extend({}, this.defaults, options);
+      for (key in ref) {
+        val = ref[key];
         this[key] = val;
       }
       if (!this.viewPath) {
@@ -107,7 +107,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.show = function(name, options) {
-      var i, isPush, key, nextView, prevView, view, viewClass, _i, _len, _name, _ref, _ref1;
+      var _name, i, isPush, j, key, len, nextView, prevView, ref, ref1, view, viewClass;
       if (options == null) {
         options = {};
       }
@@ -118,9 +118,9 @@ var __hasProp = {}.hasOwnProperty,
         viewClass = require(this.viewPath + name);
         nextView = this.create(name, viewClass, options);
         if (this.stack.length === 0 && nextView.stack) {
-          _ref = nextView.stack;
-          for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-            _name = _ref[i];
+          ref = nextView.stack;
+          for (i = j = 0, len = ref.length; j < len; i = ++j) {
+            _name = ref[i];
             if (!(_name !== name)) {
               continue;
             }
@@ -138,7 +138,7 @@ var __hasProp = {}.hasOwnProperty,
       }
       prevView = this.stack[this.stack.length - 1];
       isPush = this.stack.indexOf(nextView) < 0;
-      if ((prevView != null ? (_ref1 = prevView.stack) != null ? _ref1.indexOf(name) : void 0 : void 0) > -1) {
+      if ((prevView != null ? (ref1 = prevView.stack) != null ? ref1.indexOf(name) : void 0 : void 0) > -1) {
         isPush = false;
       }
       if (options.isDialog) {
@@ -151,7 +151,7 @@ var __hasProp = {}.hasOwnProperty,
       }
       if (options.transition) {
         this.willCustomPush = true;
-        this.transform = this["" + options.transition + "Transform"];
+        this.transform = this[options.transition + "Transform"];
       } else if (!this.willCustomPush) {
         this.willCustomPush = false;
         this.transform = this.slideTransform;
@@ -197,7 +197,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.activateCurrentView = function(prevView, isPush) {
-      var nextView, _base;
+      var base, nextView;
       nextView = this.stack[this.stack.length - 1];
       if (!this.willShowDialog) {
         this.cleanup(nextView.$el);
@@ -209,8 +209,8 @@ var __hasProp = {}.hasOwnProperty,
         }
         return this.preventTransition = false;
       } else if (prevView !== nextView) {
-        if (typeof (_base = prevView.undelegateEvents()).hide === "function") {
-          _base.hide();
+        if (typeof (base = prevView.undelegateEvents()).hide === "function") {
+          base.hide();
         }
         prevView.$el.css({
           zIndex: this.stack.length + (isPush ? -1 : 1)
@@ -280,10 +280,10 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.onStart = function(e) {
-      var inPrevStack, index, nextView, prevView, _e, _ref;
+      var _e, inPrevStack, index, nextView, prevView, ref;
       prevView = this.stack[this.stack.length - 1];
-      inPrevStack = ((_ref = prevView.stack) != null ? _ref.indexOf(prevView.__key) : void 0) > 0;
-      if ((this.stack.length < 2 && !inPrevStack) || e.target.nodeName.match(/INPUT|TEXTAREA/)) {
+      inPrevStack = ((ref = prevView.stack) != null ? ref.indexOf(prevView.__key) : void 0) > 0;
+      if ((this.stack.length < 2 && !inPrevStack) || e.target.nodeName.match(/INPUT|TEXTAREA/) || this.stack.slice(-1)[0].preventPop === true) {
         return;
       }
       _e = isTouch ? e.touches[0] : e;

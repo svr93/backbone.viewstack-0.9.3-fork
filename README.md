@@ -106,7 +106,7 @@ Views that don't already have and `open` or `exit` method will be given one. `op
 
 ### Swipe to go back
 
-If your app can be loaded on views part way down the stack, you can declare a stack array in the view that is being shown. There is a caveat, though. The viewstack defaults to `window.history.back()` when swiping to go back, but this will not work when there is no history. Apps that could load part way down the stack should pass `isLinear: false` when initializing the stack and manage the router's navigation in the `show` method of each view. See the [demo](http://creative-licence-digital.github.io/backbone.viewstack/demo/public/) for an example of this.
+If your app can be loaded on views part way down the stack, you can declare a stack array in the view that is being shown. There is a caveat, though. The viewstack defaults to `window.history.back()` when swiping to go back, but this will not work when there is no history. Apps that could load part way down the stack should pass `isLinear: false` when initializing the stack and manage the router's navigation in the `show` method of each view. See the [demo](http://creative-licence-digital.github.io/backbone.viewstack/demo/public/) for an example of this. You can also prevent swiping by setting `preventPop: true` on the view in question.
 
 ### Event management
 

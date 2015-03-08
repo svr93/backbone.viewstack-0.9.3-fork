@@ -46,6 +46,8 @@ task "build:demo", ->
     fs.writeFile "demo/app/README.md",
       "---\nversion: #{config.version}\n---\n\n" + res
 
+  exec "brunch b -P", cwd: "./demo"
+
 task "build", ->
   invoke "build:src"
   invoke "build:bower"

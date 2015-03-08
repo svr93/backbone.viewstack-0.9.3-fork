@@ -297,6 +297,7 @@ do ->
 
       if not @hasSlid
         if Math.abs(_e.pageX - @offset.left - @slide.startX) > 10
+          window.clearTimeout @transitionOutTimeout
           @hasSlid = true
           @slide.prev.undelegateEvents()
           @slide.next.undelegateEvents()

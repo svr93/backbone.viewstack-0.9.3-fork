@@ -1,4 +1,4 @@
-/* backbone.viewstack - v0.9.2 - MIT */
+/* backbone.viewstack - v0.9.3 - MIT */
 /* Manage views & transitions in Backbone without the boilerplate */
 /* https://github.com/Creative-Licence-Digital/backbone.viewstack */
 var __hasProp = {}.hasOwnProperty,
@@ -325,6 +325,7 @@ var __hasProp = {}.hasOwnProperty,
       _e = isTouch ? e.touches[0] : e;
       if (!this.hasSlid) {
         if (Math.abs(_e.pageX - this.offset.left - this.slide.startX) > 10) {
+          window.clearTimeout(this.transitionOutTimeout);
           this.hasSlid = true;
           this.slide.prev.undelegateEvents();
           this.slide.next.undelegateEvents();

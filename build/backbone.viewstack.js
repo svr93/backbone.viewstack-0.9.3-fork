@@ -108,10 +108,12 @@ var __hasProp = {}.hasOwnProperty,
 
     ViewStack.prototype.show = function(name, options) {
       var i, isPush, key, nextView, prevView, view, viewClass, _i, _len, _name, _ref, _ref1;
+      var transition;
       if (options == null) {
         options = {};
       }
       key = options.key || name;
+      transition = options.transition;
       if (this.views[key] != null) {
         nextView = this.views[key];
       } else {
@@ -149,9 +151,17 @@ var __hasProp = {}.hasOwnProperty,
       } else {
         this.delegateEvents();
       }
-      if (options.transition) {
+      if (transition) {
         this.willCustomPush = true;
-        this.transform = this["" + options.transition + "Transform"];
+
+        if (typeof transition === 'string') {
+
+          this.transform = this["" + transition + "Transform"];
+        } else {
+
+          nextView.__customTransition = transition.custom;
+          this.transform = this["" + transition.common + "Transform"];
+        }
       } else if (!this.willCustomPush) {
         this.willCustomPush = false;
         this.transform = this.slideTransform;
@@ -232,6 +242,14 @@ var __hasProp = {}.hasOwnProperty,
         this.transform(nextView, 0, !isPush);
         if (!this.willShowDialog) {
           this.transitionView(prevView, true);
+
+          var customTransitionProp = prevView.__customTransition;
+          if (customTransitionProp &&
+              nextView.__key === customTransitionProp.nextView) {
+
+            var animationProp = prevView.__customTransition.animation;
+            this.transform = this[animationProp + 'Transform'];
+          }
           this.transform(prevView, this.endRatio(!isPush), !isPush);
         }
         window.clearTimeout(this.transitionOutTimeout);

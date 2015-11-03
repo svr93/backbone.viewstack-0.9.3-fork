@@ -24,6 +24,7 @@ var __hasProp = {}.hasOwnProperty,
       viewPath: "views/",
       headClass: ".view-head",
       bodyClass: ".view-body",
+      containerClass: '.view-container',
       ms: 300,
       overwrite: true
     };
@@ -74,6 +75,7 @@ var __hasProp = {}.hasOwnProperty,
       view.__key = key;
       view.__head = view.$(this.headClass);
       view.__body = view.$(this.bodyClass);
+      view.__container = view.$(this.containerClass);
       if (view.open == null) {
         view.open = (function(_this) {
           return function(options) {
@@ -109,6 +111,7 @@ var __hasProp = {}.hasOwnProperty,
     ViewStack.prototype.show = function(name, options) {
       var i, isPush, key, nextView, prevView, view, viewClass, _i, _len, _name, _ref, _ref1;
       var transition;
+      var animationProp;
       if (options == null) {
         options = {};
       }
@@ -154,14 +157,28 @@ var __hasProp = {}.hasOwnProperty,
       if (transition) {
         this.willCustomPush = true;
 
+        nextView.__commonDelay = transition.commonDelay;
+
         if (typeof transition === 'string') {
 
-          this.transform = this["" + transition + "Transform"];
-        } else {
+          animationProp = transition;
+        } else if (transition.custom) {
 
           nextView.__customTransition = transition.custom;
-          this.transform = this["" + transition.common + "Transform"];
+
+          if (prevView.__key !== transition.custom.prevView) {
+
+            animationProp = transition.common || 'slide';
+          } else {
+
+            animationProp = transition.custom.animation;
+          }
+        } else {
+
+          animationProp = 'slide';
         }
+        this.transform = this[animationProp + "Transform"];
+
       } else if (!this.willCustomPush) {
         this.willCustomPush = false;
         this.transform = this.slideTransform;
@@ -237,15 +254,21 @@ var __hasProp = {}.hasOwnProperty,
         if (!this.willHideDialog) {
           this.transform(nextView, this.endRatio(isPush), isPush);
         }
+
+        var customTransitionProp = prevView.__customTransition;
+        var customAnimation = customTransitionProp &&
+            nextView.__key === customTransitionProp.nextView;
+
+        var delay = !(prevView.__commonDelay === false &&
+                    nextView.__commonDelay === false);
+
         this.$el.get(0).offsetWidth;
-        this.transitionView(nextView, true);
+        this.transitionView(nextView, delay);
         this.transform(nextView, 0, !isPush);
         if (!this.willShowDialog) {
-          this.transitionView(prevView, true);
 
-          var customTransitionProp = prevView.__customTransition;
-          if (customTransitionProp &&
-              nextView.__key === customTransitionProp.nextView) {
+          this.transitionView(prevView, delay);
+          if (customAnimation) {
 
             var animationProp = prevView.__customTransition.animation;
             this.transform = this[animationProp + 'Transform'];
@@ -403,9 +426,10 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     ViewStack.prototype.transitionView = function(view, willTransition) {
+
       var transition;
       transition = willTransition ? "all " + this.ms + "ms" : "none";
-      return view.__head.add(view.__body).css({
+      return view.__head.add(view.__body).add(view.__container).css({
         "-webkit-transition": transition,
         "-moz-transition": transition,
         "-ms-transition": transition,
@@ -463,7 +487,7 @@ var __hasProp = {}.hasOwnProperty,
 
     ViewStack.prototype.clearTransforms = function(view) {
       if (view) {
-        view.__body.css({
+        view.__body.add(view.__container).css({
           "-webkit-transform": "",
           "-moz-transform": "",
           "-ms-transform": "",

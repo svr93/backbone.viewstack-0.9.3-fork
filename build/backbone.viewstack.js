@@ -143,7 +143,10 @@ var __hasProp = {}.hasOwnProperty,
         nextView.show(options);
       }
       prevView = this.stack[this.stack.length - 1];
-      isPush = this.stack.indexOf(nextView) < 0;
+
+      isPush = this.stack.indexOf(nextView) < 0 || (nextView.__isDialog && nextView.__isDialog.singleDialog);
+      // only for case where next view == prev view
+
       if ((prevView != null ? (_ref1 = prevView.stack) != null ? _ref1.indexOf(name) : void 0 : void 0) > -1) {
         isPush = false;
       }

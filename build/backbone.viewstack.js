@@ -76,6 +76,7 @@ var __hasProp = {}.hasOwnProperty,
       view.__head = view.$(this.headClass);
       view.__body = view.$(this.bodyClass);
       view.__container = view.$(this.containerClass);
+      view.__isDialog = options.isDialog;
       if (view.open == null) {
         view.open = (function(_this) {
           return function(options) {
@@ -280,7 +281,7 @@ var __hasProp = {}.hasOwnProperty,
           return function() {
             nextView.delegateEvents();
             prevView.$el.removeClass("active");
-            if (!_this.willShowDialog) {
+            if (!_this.willShowDialog || (prevView.__isDialog && nextView.__isDialog && nextView.__isDialog.singleDialog)) {
               prevView.$el.hide();
             }
             _this.clearTransforms(nextView);
